@@ -15,11 +15,18 @@ import io.netty.handler.stream.ChunkedNioFile;
 import io.netty.util.CharsetUtil;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -42,13 +49,36 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
     private static final File INDEX;
 
     static {
+
         URL location = HttpRequestHandler.class.getProtectionDomain().getCodeSource().getLocation();
         System.out.println(location);
+
+        String resourcePath = HttpRequestHandler.class.getClassLoader().getResource("index.html").getFile();
+        System.out.println("index.html:"+resourcePath);
         try {
+
+            InputStream inputStream = HttpRequestHandler.class.getClassLoader().getResourceAsStream("index.html");
+            if (inputStream == null) {
+                System.out.println("Resource not found!");
+            }
+            
+            FileOutputStream outputStream = new FileOutputStream("index.html");
+            byte[] temp = new byte[1024];
+            int length ;
+            while((length=inputStream.read(temp)) > 0){
+                outputStream.write(temp, 0, length);
+            }
+            outputStream.close();
+            inputStream.close();
+                
+            resourcePath = !resourcePath.contains("file:") ? resourcePath : resourcePath.substring(5);
             String path = location.toURI() + "index.html";
             path = !path.contains("file:") ? path : path.substring(5);
-            INDEX = new File(path);
-        } catch (URISyntaxException e) {
+            System.out.println("index.html(1path):"+path);
+            INDEX = new File("index.html");
+            System.out.println("length:"+INDEX.length());
+        } catch (Exception e) {
+            System.out.println(e);
             throw new IllegalStateException("Unable to locate index.html", e);
         }
     }
@@ -211,6 +241,7 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
             if (HttpUtil.is100ContinueExpected(request)) {
                 send100Continue(ctx);
             }
+
             // 读取 index.html
             try (RandomAccessFile file = new RandomAccessFile(INDEX, "r")) {
 

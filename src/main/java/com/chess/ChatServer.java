@@ -57,7 +57,9 @@ public class ChatServer {
     }
 
     public static void main(String[] args) throws Exception {
-        args = new String[]{"8888"};
+        System.out.println(111111111);
+        if(args==null || args.length==0)
+            args = new String[]{"8888"};
         if (args.length != 1) {
             System.err.println("Please give port as argument");
             System.exit(1);
