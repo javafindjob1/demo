@@ -21,7 +21,7 @@ jobs:
         run: mvn --batch-mode --update-snapshots verify
 
       - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v4.6.0
+        uses: actions/upload-artifact@v3
         with:
           name: jar-file
           path: target/*.jar
@@ -31,7 +31,7 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v4.6.0
+        uses: actions/download-artifact@v3
         with:
           name: jar-file
 
