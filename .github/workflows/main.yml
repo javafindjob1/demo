@@ -48,33 +48,33 @@ jobs:
           # If true, hidden files will be included in the artifact. If false, hidden files will be excluded from the artifact.
 
           #include-hidden-files: # optional, default is false
-release:
-  needs: build
-  runs-on: ubuntu-latest
+  release:
+    needs: build
+    runs-on: ubuntu-latest
 
-  steps:
-    - name: Download artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: jar-file
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: jar-file
 
-    - name: Publish to GitHub Releases
-      id: create_release
-      uses: softprops/action-gh-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: v${{ github.event.pull_request.number || github.sha }}
-        body: |
-          自动发布版本
-          SHA: ${{ github.sha }}
+      - name: Publish to GitHub Releases
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.event.pull_request.number || github.sha }}
+          body: |
+            自动发布版本
+            SHA: ${{ github.sha }}
 
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./target/*.jar
-        asset_name: demo.jar
-        asset_content_type: application/java-archive
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./target/*.jar
+          asset_name: demo.jar
+          asset_content_type: application/java-archive
