@@ -16,18 +16,11 @@ import io.netty.util.CharsetUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,13 +43,7 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
 
     static {
 
-        URL location = HttpRequestHandler.class.getProtectionDomain().getCodeSource().getLocation();
-        System.out.println(location);
-
-        String resourcePath = HttpRequestHandler.class.getClassLoader().getResource("index.html").getFile();
-        System.out.println("index.html:"+resourcePath);
         try {
-
             InputStream inputStream = HttpRequestHandler.class.getClassLoader().getResourceAsStream("index.html");
             if (inputStream == null) {
                 System.out.println("Resource not found!");
@@ -71,10 +58,6 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
             outputStream.close();
             inputStream.close();
                 
-            resourcePath = !resourcePath.contains("file:") ? resourcePath : resourcePath.substring(5);
-            String path = location.toURI() + "index.html";
-            path = !path.contains("file:") ? path : path.substring(5);
-            System.out.println("index.html(1path):"+path);
             INDEX = new File("index.html");
             System.out.println("length:"+INDEX.length());
         } catch (Exception e) {
@@ -94,7 +77,7 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
         // (1) 如果请求了 WebSocket 协议升级，则增加引用计数（调用 retain()方法），并将它传递给下一 个
         // ChannelInboundHandler
         URL url = new URL("http://localhost" + request.uri());
-        if (wsUri.equalsIgnoreCase(request.getUri())) {
+        if (wsUri.equalsIgnoreCase(request.uri())) {
             System.out.println("ws 连接请求 channelId " + ctx.channel().id());
             HttpHeaders headers = request.headers();
             // 获取 Cookie 字符串
@@ -125,8 +108,6 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
                         user.setId(u.getId());
                         user.setName(u.getName());
                         userMap.put(user.getId(), user);
-                    }else{
-                        userMap.remove(user.getWsChannelId());
                     }
                     userMap.put(cid, user);
                     user.setWsChannelId(cid);
@@ -267,25 +248,6 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
                 if (!keepAlive) {
                     future.addListener(ChannelFutureListener.CLOSE);
                 }
-            }
-        }
-    }
-
-    private void handleCors(ChannelHandlerContext ctx, FullHttpRequest request) {
-        // 允许所有来源的请求
-        String origin = request.headers().get(HttpHeaderNames.ORIGIN);
-        if (origin != null) {
-            FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
-            response.headers().set(HttpHeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
-            response.headers().set(HttpHeaderNames.ACCESS_CONTROL_ALLOW_METHODS, "GET, POST, PUT, DELETE, OPTIONS");
-            response.headers().set(HttpHeaderNames.ACCESS_CONTROL_ALLOW_HEADERS, "Content-Type, Authorization");
-            response.headers().set(HttpHeaderNames.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
-            response.headers().set(HttpHeaderNames.ACCESS_CONTROL_MAX_AGE, 86400); // 1 day
-
-            if (HttpMethod.OPTIONS.equals(request.method())) {
-                // 预检请求
-                ctx.writeAndFlush(response);
-                ctx.close();
             }
         }
     }

@@ -1,8 +1,12 @@
 package com.chess.busi;
 
+import java.util.Map;
+
 import io.netty.channel.ChannelHandlerContext;
 
 public interface DeskService {
+
+  public Map<String,Desk> getDeskMap();
 
   public void addDesk(ChessReq req, ChannelHandlerContext ctx);
 

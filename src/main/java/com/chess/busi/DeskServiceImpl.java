@@ -1,29 +1,73 @@
 package com.chess.busi;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import com.alibaba.fastjson.JSON;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.netty.util.concurrent.EventExecutorGroup;
+import io.netty.util.concurrent.ScheduledFuture;
+import lombok.Data;
 
+@Data
 public class DeskServiceImpl implements DeskService {
   private Map<String, Desk> deskMap = new LinkedHashMap<>();
   private int DESK_NO = 2;
   private final ChannelGroup group;
+  private final EventExecutorGroup businessGroup;
   private final Map<String, User> userMap;
 
-  public DeskServiceImpl(ChannelGroup group, Map<String, User> userMap) {
+  public DeskServiceImpl(ChannelGroup group, EventExecutorGroup businessGroup, Map<String, User> userMap) {
     this.group = group;
+    this.businessGroup = businessGroup;
     this.userMap = userMap;
-    Desk desk = new Desk();
-    desk.setDeskId("board" + DESK_NO);
-    deskMap.put(desk.getDeskId(), desk);
-    DESK_NO++;
+
+    for (int i = 0; i < 5; i++) {
+      Desk desk = new Desk();
+      desk.setDeskId("board" + DESK_NO);
+      deskMap.put(desk.getDeskId(), desk);
+      DESK_NO++;
+    }
+  }
+
+  public void scheduleOvertimeRestartTask(Desk desk, int sectime) {
+    ScheduledFuture<?> schedule = desk.getTimeoutSchedule();
+    if(schedule!=null){
+      schedule.cancel(true);
+    }
+    schedule = this.businessGroup.schedule(() -> {
+      System.out.println("延时任务执行了");
+      try {
+        long time = desk.getLastPace().getUpdateTime();
+        long distance = new Date().getTime() - time;
+        System.out.println("距离最后一步棋的时间为 " + distance);
+        if (distance < sectime * 1000) {
+          return;
+        }
+        desk.restart();
+
+        ChessResponse result2 = new ChessResponse();
+        result2.setType("restart");
+        result2.setDeskId(desk.getDeskId());
+        result2.setRetCode("0000");
+        result2.setData(desk);
+        // 创建新的 TextWebSocketFrame 对象
+        String resultStr2 = JSON.toJSONString(result2);
+        TextWebSocketFrame modifiedFrame2 = new TextWebSocketFrame(resultStr2);
+        System.out.println("全局推送重新开始 " + group);
+        group.writeAndFlush(modifiedFrame2);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }, sectime, TimeUnit.SECONDS);
+    desk.setTimeoutSchedule(schedule);
   }
 
   @Override
@@ -43,7 +87,7 @@ public class DeskServiceImpl implements DeskService {
     String cid = ctx.channel().id().toString();
     User user = userMap.get(cid);
     if (user != null) {
-      System.out.println("用户标识："+user.getId());
+      System.out.println("用户标识：" + user.getId());
       result.setPlayer(user.getId());
     }
     List<Desk> list = new ArrayList<>();
@@ -85,14 +129,11 @@ public class DeskServiceImpl implements DeskService {
       result.setRetCode("0004");
       result.setRetMsg("非本桌玩家");
     } else {
-      if (lastIndex == desk.getIndex() + 1
+      if (lastIndex == desk.getLastPace().getIndex() + 1
           && desk.getSeat()[(lastIndex) % 2].getId().equals(id)) {
         Man key = desk.getManByPos(lastPace.getPos());
         boolean canMove = key.indexOfPs(lastPace.getNewPos());
         if (canMove) {
-          desk.setIndex(lastIndex);
-          desk.getPace().add(lastPaceStr);
-          desk.setLastPace(lastPaceStr);
           desk.move(lastPace);
 
           result.setRetCode("0000");
@@ -100,8 +141,12 @@ public class DeskServiceImpl implements DeskService {
           // 创建新的 TextWebSocketFrame 对象
           String resultStr = JSON.toJSONString(result);
           TextWebSocketFrame modifiedFrame = new TextWebSocketFrame(resultStr);
-          System.out.println("全局推送这步棋");
-          group.writeAndFlush(modifiedFrame.retain());
+          System.out.println("全局推送这步棋 " + lastPaceStr + "," + group);
+          group.writeAndFlush(modifiedFrame);
+
+          // 调度一个延时任务，例如在10秒后执行某个操作
+          scheduleOvertimeRestartTask(desk,61);
+
           return;
         } else {
           result.setData(desk);
@@ -147,10 +192,18 @@ public class DeskServiceImpl implements DeskService {
       result.setRetCode("0000");
       result.setRetMsg("占座成功");
       result.setData(desk);
+
+      if(desk.getPlayers().size() == 2){
+        desk.getLastPace().setUpdateTime(new Date().getTime());
+        scheduleOvertimeRestartTask(desk,21);
+      }
+      
+      user.setDeskId(deskId);
       // 创建新的 TextWebSocketFrame 对象
       String resultStr = JSON.toJSONString(result);
       TextWebSocketFrame modifiedFrame = new TextWebSocketFrame(resultStr);
-      group.writeAndFlush(modifiedFrame.retain());
+      group.writeAndFlush(modifiedFrame);
+
     } else {
       result.setRetCode("0001");
       result.setRetMsg("已经有人了");
@@ -158,7 +211,7 @@ public class DeskServiceImpl implements DeskService {
       // 创建新的 TextWebSocketFrame 对象
       String resultStr = JSON.toJSONString(result);
       TextWebSocketFrame resultFrame = new TextWebSocketFrame(resultStr);
-      ctx.pipeline().writeAndFlush(resultFrame.retain());
+      ctx.pipeline().writeAndFlush(resultFrame);
     }
 
   }
@@ -196,7 +249,7 @@ public class DeskServiceImpl implements DeskService {
       // 创建新的 TextWebSocketFrame 对象
       String resultStr = JSON.toJSONString(result);
       TextWebSocketFrame modifiedFrame = new TextWebSocketFrame(resultStr);
-      ctx.writeAndFlush(modifiedFrame.retain());
+      ctx.writeAndFlush(modifiedFrame);
 
     } else {
       desk.restart();
@@ -206,7 +259,7 @@ public class DeskServiceImpl implements DeskService {
       // 创建新的 TextWebSocketFrame 对象
       String resultStr = JSON.toJSONString(result);
       TextWebSocketFrame modifiedFrame = new TextWebSocketFrame(resultStr);
-      group.writeAndFlush(modifiedFrame.retain());
+      group.writeAndFlush(modifiedFrame);
     }
 
   }
@@ -246,7 +299,7 @@ public class DeskServiceImpl implements DeskService {
     }
 
     TextWebSocketFrame modifiedFrame = new TextWebSocketFrame(resultStr);
-    group.writeAndFlush(modifiedFrame.retain());
+    group.writeAndFlush(modifiedFrame);
   }
 
   @Override
@@ -294,7 +347,7 @@ public class DeskServiceImpl implements DeskService {
     // 创建新的 TextWebSocketFrame 对象
     String resultStr = JSON.toJSONString(result);
     TextWebSocketFrame modifiedFrame = new TextWebSocketFrame(resultStr);
-    group.writeAndFlush(modifiedFrame.retain());
+    group.writeAndFlush(modifiedFrame);
   }
 
   public void sendNotLogin(ChannelHandlerContext ctx, ChessResponse result) {
@@ -303,7 +356,7 @@ public class DeskServiceImpl implements DeskService {
     result.setRetMsg("未登录");
     String resultStr = JSON.toJSONString(result);
     TextWebSocketFrame modifiedFrame = new TextWebSocketFrame(resultStr);
-    ctx.pipeline().channel().writeAndFlush(modifiedFrame.retain());
+    ctx.pipeline().channel().writeAndFlush(modifiedFrame);
   }
 
 }

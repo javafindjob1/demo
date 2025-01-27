@@ -13,6 +13,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.group.ChannelGroup;
+import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 
@@ -28,10 +29,10 @@ public class TextWebSocketFrameHandler
     private final ChannelGroup group;
     private DeskService deskService;
 
-    public TextWebSocketFrameHandler(ChannelGroup group, Map<String,User> userMap) {
+    public TextWebSocketFrameHandler(ChannelGroup group, Map<String, User> userMap, DeskService deskService) {
         System.out.println("TextWebSocketFrameHandler" + this);
         this.group = group;
-        this.deskService = new DeskServiceImpl(group, userMap);
+        this.deskService = deskService;
     }
 
     // 重写 userEventTriggered()方法以处理自定义事件
@@ -55,6 +56,21 @@ public class TextWebSocketFrameHandler
     }
 
     @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        // 处理通道关闭事件
+        System.out.println("WebSocket channel inactive");
+        super.channelInactive(ctx);
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        System.out.println("WebSocket channel exceptionCaught");
+        // 处理异常事件
+        cause.printStackTrace();
+        ctx.close();
+    }
+
+    @Override
     public void channelRead0(ChannelHandlerContext ctx,
             TextWebSocketFrame msg) throws Exception {
         // (3) 增加消息的引用计数，并将它写到 ChannelGroup 中所有已经连接的客户端
@@ -66,13 +82,13 @@ public class TextWebSocketFrameHandler
         try {
             int i = originalText.indexOf("\"messageType\":\"image\"");
             ChessReq req;
-            if(i>-1){
-                int no = originalText.indexOf("}")+1;
+            if (i > -1) {
+                int no = originalText.indexOf("}") + 1;
                 String or = originalText.substring(0, no);
                 req = JSON.parseObject(or, ChessReq.class);
                 String or2 = originalText.substring(no);
                 req.setMessage(or2);
-            }else{
+            } else {
                 req = JSON.parseObject(originalText, ChessReq.class);
             }
             switch (req.getType()) {
@@ -102,10 +118,10 @@ public class TextWebSocketFrameHandler
             }
 
         } catch (JSONException e) {
-            String tmp = originalText.length()>100?originalText.substring(0,100):originalText;
-            System.out.println("请求参数解析json失败：" + tmp +e.getMessage());
+            String tmp = originalText.length() > 100 ? originalText.substring(0, 100) : originalText;
+            System.out.println("请求参数解析json失败：" + tmp + e.getMessage());
         } catch (Exception e) {
-            String tmp = originalText.length()>100?originalText.substring(0,100):originalText;
+            String tmp = originalText.length() > 100 ? originalText.substring(0, 100) : originalText;
             System.out.println("运行异常：" + tmp);
             e.printStackTrace();
         }

@@ -1,6 +1,6 @@
 package com.chess.busi;
 
-import java.lang.reflect.Field;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,8 +8,8 @@ import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.annotation.JSONField;
-import com.chess.busi.man.*;
 
+import io.netty.util.concurrent.ScheduledFuture;
 import lombok.Data;
 
 @Data
@@ -26,10 +26,10 @@ public class Desk {
   private Map<String, Integer> players;
 
   /** 走的最后一步棋的信息， 表示第index手棋，红色【黑色】走了6633这步棋 */
-  private int index;
-  private String lastPace;
-  private String lastManKey;
+  private Pace lastPace;
 
+  @JSONField(serialize = false)
+  private ScheduledFuture<?> timeoutSchedule;
   /** 棋子信息 */
   @JSONField(serialize = false)
   private Map<String, Man> mans;
@@ -46,10 +46,7 @@ public class Desk {
   public void restart() {
     seat = new User[2];
     players = new HashMap<>();
-
-    index = 0;
-    lastPace = null;
-    lastManKey = null;
+    lastPace = new Pace();
 
     pace = new ArrayList<>();
     mans = new HashMap<>();
@@ -112,7 +109,13 @@ public class Desk {
     map[pos.getY()][pos.getX()] = null;
     map[newPos.getY()][newPos.getX()] = key.getText();
     key.move(newPos);
-    this.lastManKey = key.getText();
+
+    this.getPace().add(pace.getPace());
+    
+    lastPace.setIndex(this.pace.size());
+    lastPace.setPace(pace.getPace());
+    lastPace.setManKey(key.getText());
+    lastPace.setUpdateTime(new Date().getTime());
   }
 
   public boolean sitDown(int my, User player) {
@@ -139,15 +142,9 @@ public class Desk {
     // 在红棋的回合内可以悔棋
     // 在黑棋的回合内可以悔棋
     for (int i = 0; i < 2; i++) {
-      String pace = this.pace.remove(this.pace.size() - 1);
-      this.index = this.pace.size();
-      if (this.index > 0) {
-        this.lastPace = this.pace.get(this.index - 1);
-        this.lastManKey = this.lastPace.substring(4);
-      } else {
-        this.lastPace = null;
-        this.lastManKey = null;
-      }
+      int index = this.pace.size() - 1;
+      String pace = this.pace.remove(index);
+
       System.out.println("退回 " + pace + ",第 " + index + "手");
       String[] arr = pace.split("");
 
@@ -161,6 +158,18 @@ public class Desk {
       } else {
         this.map[Integer.parseInt(arr[3])][Integer.parseInt(arr[2])] = null;
       }
+
+      // 重新记录最后一步棋的信息
+      String lastManKey = null;
+      String lastPace = null;
+      if (index > 0) {
+        lastPace = pace;
+        lastManKey = pace.substring(4);
+      }
+      this.lastPace.setIndex(index);
+      this.lastPace.setPace(lastPace);
+      this.lastPace.setManKey(lastManKey);
+      this.lastPace.setUpdateTime(new Date().getTime());
     }
 
   }
