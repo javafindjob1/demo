@@ -4,6 +4,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslHandler;
+import io.netty.util.concurrent.EventExecutorGroup;
 
 import javax.net.ssl.SSLEngine;
 
@@ -17,8 +18,8 @@ public class SecureChatServerInitializer extends ChatServerInitializer {
     private final SslContext context;
 
     public SecureChatServerInitializer(ChannelGroup group,
-        SslContext context) {
-        super(group);
+        SslContext context, EventExecutorGroup businessGroup) {
+        super(group, businessGroup);
         this.context = context;
     }
 

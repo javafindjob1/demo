@@ -7,6 +7,7 @@ import io.netty.channel.group.ChannelGroup;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
+import io.netty.util.concurrent.EventExecutorGroup;
 
 import java.net.InetSocketAddress;
 
@@ -26,9 +27,9 @@ public class SecureChatServer extends ChatServer {
     // 这个重写是真骚
     @Override
     protected ChannelInitializer<Channel> createInitializer(
-            ChannelGroup group) {
+            ChannelGroup group, EventExecutorGroup businessGroup) {
         // 返回之前创建的 SecureChatServerInitializer 以启用加密
-        return new SecureChatServerInitializer(group, context);
+        return new SecureChatServerInitializer(group, context, businessGroup);
     }
 
     public static void main(String[] args) throws Exception {
