@@ -53,6 +53,7 @@ public class ExcelImageInsert {
         String[] basePath = {
                 assetPath + "resource\\",
                 "D:\\war5-jass\\jass_plugin\\w3x2lni_zhCN_v2.5.2\\war3mpq\\",
+                "D:\\war5-jass\\jass_plugin\\w3x2lni_zhCN_v2.5.2\\war3patch\\",
                 "D:\\war5-jass\\jass_plugin\\w3x2lni_zhCN_v2.5.2\\war3xmpq\\" };
 
         String fullPath = null;

@@ -24,18 +24,23 @@ public class MdxRead {
     //   return;
 
     String assetPath = "D:\\war5-jass\\jass_plugin\\w3x2lni_zhCN_v2.5.2\\w3x2lni_zhCN_v2.5.2\\";
-    assetPath += "0x7\\F89770BCB2CE413E0608677D93A1F290\\";
+    assetPath += "0x7\\13EAFB2AFF422D4A26AE941286A3ECF0\\";
     ExcelImageInsert.set(assetPath);
 
     List<Unit> list = new IniRead().read("template/Custom/unit.ini", assetPath + "table/unit.ini", Unit.class);
     Map<String, UnitDetail> unitMap = new UnitParse().parse(list);
     List<UnitDetail> u = unitMap.values().stream().filter(e -> {
       // return e.getType().contains("giant");
-      return e.getId().contains("nmgr");
+      return e.getId().contains("Eidm");
       // return !e.getAbilList().contains("AInv");
       // return e.getAbilList().contains("AInv");
     }).collect(Collectors.toList());
 
+    
+    copyMdx(u);
+  }
+
+  public static void copyMdx(List<UnitDetail> u){
     Map<String, List<String>> noexistblp = new HashMap<>();
     Map<String, Map<String, String>> dataMap = new HashMap<>();
     u.stream().forEach(unit -> {
@@ -106,16 +111,18 @@ public class MdxRead {
 
     System.out.println(noexistblp);
 
+    String pathPre = "C:\\Users\\76769\\Desktop\\demo\\html\\javafindjob1.github.io\\x7\\x7-mdx\\";
+    // String pathPre = "C:\\Users\\76769\\Desktop\\demo\\test\\mdxfiles\\";
     dataMap.forEach((unitId, blpMap) -> {
       String mdxf = blpMap.remove("mdx");
-      copyfile(mdxf, "test/mdxfiles/mdx-" + unitId + "-" + new File(mdxf).getName());
+      // copyfile(mdxf, "test/mdxfiles/mdx-" + unitId + "-" + new File(mdxf).getName());
+      
+      copyfile(mdxf, pathPre + unitId + ".mdx");
       blpMap.forEach((blp, blpPath) -> {
-        copyfile(blpPath, "test/mdxfiles/" + blp);
+        copyfile(blpPath, pathPre + blp);
       });
     });
-
   }
-
   public static void createPath(File file) {
     if (file.exists()) {
       return;
@@ -126,13 +133,13 @@ public class MdxRead {
   }
 
   public static void copyfile(String srcPath, String destPath) {
-    createPath(new File(destPath).getParentFile());
+    createPath(new File(destPath.toLowerCase()).getParentFile());
 
     try (
         FileInputStream in = new FileInputStream(srcPath);
         FileChannel fc = in.getChannel();
 
-        FileOutputStream os = new FileOutputStream(destPath);
+        FileOutputStream os = new FileOutputStream(destPath.toLowerCase());
         FileChannel fcc = os.getChannel();) {
       fc.transferTo(0, fc.size(), fcc);
     } catch (Exception e) {

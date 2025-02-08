@@ -25,23 +25,28 @@ public class MdxRead {
     assetPath += "0mp\\4FFD4CA60115240BEFBD7D6278E38E2F\\";
     ExcelImageInsert.set(assetPath);
 
-    // parseMdx("ss", "Abilities\\Spells\\Items\\StaffOfPurification\\PurificationCaster.mdl");
+    // parseMdx("ss",
+    // "Abilities\\Spells\\Items\\StaffOfPurification\\PurificationCaster.mdl");
     // if (true)
-    //   return;
+    // return;
 
     List<Unit> list = new IniRead().read("template/Custom/unit.ini", assetPath + "table\\unit.ini", Unit.class);
     Map<String, UnitDetail> unitMap = new UnitParse().parse(list);
     List<UnitDetail> u = unitMap.values().stream().filter(e -> {
       // return e.getType().contains("giant");
-      return e.getId().contains("O00H");
+      return e.getId().contains("N02D");
       // return !e.getAbilList().contains("AInv");
       // return e.getAbilList().contains("AInv");
     }).collect(Collectors.toList());
 
+    copyMdx(u);
+  }
+
+  public static void copyMdx(List<UnitDetail> u) {
     for (UnitDetail unit : u) {
       String mdxfile = unit.getFile();
       System.out.println("单位名称:" + unit.getName() + ",propName:" + unit.getPropernames());
-     
+
       try {
         parseMdx(unit.getId(), mdxfile);
       } catch (IOException e1) {
@@ -62,7 +67,7 @@ public class MdxRead {
         mdxfile += ".mdx";
       }
     }
-    
+
     String mdxFullPath = ExcelImageInsert.combineFullPath(mdxfile);
 
     List<String> noexistblp = new ArrayList<>();
@@ -81,6 +86,9 @@ public class MdxRead {
         } catch (FileNotFoundException e) {
           if (blp.length() > 5) {
             blp = blp.substring(1).trim();
+          }else{
+            System.out.println("贴图没有找到:" + blp);
+            break;
           }
         }
       }
@@ -88,10 +96,13 @@ public class MdxRead {
 
     System.out.println(noexistblp);
     {
+
+      String pathPre = "C:\\Users\\76769\\Desktop\\demo\\html\\javafindjob1.github.io\\mp\\mp-mdx\\";
+
       String mdxf = dataMap.remove("mdx");
-      copyfile(mdxf, "test/mdxfiles/mdx-" + unitId + "-" + new File(mdxf).getName());
+      copyfile(mdxf, pathPre + unitId + ".mdx");
       dataMap.forEach((blp, blpPath) -> {
-        copyfile(blpPath, "test/mdxfiles/" + blp);
+        copyfile(blpPath, pathPre + blp);
       });
     }
   }
@@ -106,6 +117,7 @@ public class MdxRead {
   }
 
   public static void copyfile(String srcPath, String destPath) {
+    destPath = destPath.toLowerCase();
     createPath(new File(destPath).getParentFile());
 
     try (

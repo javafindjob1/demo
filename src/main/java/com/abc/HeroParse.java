@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URLDecoder;
 import java.nio.Buffer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,22 +28,20 @@ public class HeroParse {
   public static void main(String[] args) throws Exception {
     System.out.println(11234);
     String assetPath = "D:\\war5-jass\\jass_plugin\\w3x2lni_zhCN_v2.5.2\\w3x2lni_zhCN_v2.5.2\\";
-    assetPath += "0x7\\F89770BCB2CE413E0608677D93A1F290\\";
+    assetPath += "0x7\\13EAFB2AFF422D4A26AE941286A3ECF0\\";
     ExcelImageInsert.set(assetPath);
 
     List<Function> funList = new FunctionRead()
         .read(URLDecoder.decode(FunctionParse.class.getResource("custom/war3map.j还原256.j").getPath(), "utf8"));
 
-    List<Item> list = new IniRead().read("template/Custom/item.ini",
-        FunctionParse.class.getResource("custom/item.ini").getPath(), Item.class);
+    List<Item> list = new IniRead().read("template/Custom/item.ini", assetPath + "table/item.ini", Item.class);
     ItemParse itemParse = new ItemParse();
     Map<String, ItemDetail> idItemMap = itemParse.parse(list);
 
     FunctionParse functionParse = new FunctionParse();
     Map<String, FunctionDetail> funDetailList = functionParse.parse(funList);
 
-    List<Unit> unitList = new IniRead().read("template/Custom/unit.ini",
-        FunctionParse.class.getResource("custom/unit.ini").getPath(), Unit.class);
+    List<Unit> unitList = new IniRead().read("template/Custom/unit.ini",assetPath + "table/unit.ini", Unit.class);
     UnitParse unitParse = new UnitParse();
     Map<String, UnitDetail> idUnitMap = unitParse.parse(unitList);
 
@@ -50,13 +49,14 @@ public class HeroParse {
     unitParse.wrapDropString(funDetailList);
     itemParse.wrapDropString(funDetailList, idUnitMap);
 
-    List<Ability> abilityList = new IniRead().read("template/Custom/ability.ini",
-        FunctionParse.class.getResource("custom/ability.ini").getPath(), Ability.class);
+    List<Ability> abilityList = new IniRead().read("template/Custom/ability.ini",assetPath + "table/ability.ini", Ability.class);
     Map<String, AbilityDetail> abilityMap = AbilityParse.parse(abilityList);
 
     Map<String, UnitDetail> heroMap = unitParse.getHero();
+    UnitDetail d = heroMap.get("O01C");
+    System.out.println(d);
     Map<String, Hero> map = new HeroIntroParse().parse(funList, heroMap, abilityMap, idItemMap);
-
+    System.out.println(map.get("O01C"));
     // System.out.println(JSON.toJSONString(map, SerializerFeature.PrettyFormat));
     System.out.println(JSON.toJSONString(map.get("H01E"), SerializerFeature.PrettyFormat));
 
@@ -67,6 +67,13 @@ public class HeroParse {
       // SerializerFeature.PrettyFormat));
       br.write("var x7data = " + JSON.toJSONString(map));
     }
+
+    List<UnitDetail> u = new ArrayList<>();
+    for(String unitId :  map.keySet()){
+      UnitDetail detail = idUnitMap.get(unitId);
+      u.add(detail);
+    }
+    MdxRead.copyMdx(u);
 
     if(true)return;
     // 合并图片
@@ -98,7 +105,7 @@ public class HeroParse {
         { "H00X", "H00F", "H003", "H00D", "E006", "O005", "H002", "O001", "O000" },
         { "U000", "E003", "E00Y", "O003", "H001", "O002", "N006", "H005", "H00E" },
         { "U001", "H000", "O00J", "H006", "E021", "H00G", "E00T", "E00C", "E029" },
-        { "O010", "", "E03O", "O018" },
+        { "O01C", "O010", "H01H", "", "E03O", "O018"}
     };
     Hero hero = map.get("H01E");
     String[][] iconPaths = hero.parseIconPath();
@@ -115,6 +122,9 @@ public class HeroParse {
           img = null;
         } else {
           hero = map.get(unitId);
+          if(hero==null){
+            System.out.println(unitId);
+          }
           BufferedImage img0 = ImageMerger.mergeImages(ImageMerger.readPath(hero.parseIconPath(), basePath), 64, 64);
           BufferedImage img0h = ImageMerger.readFile(fileFullPathMap.get((i * 3 + 1) + "" + (j + 1)));
           img0 = ImageMerger.mergeImages(new BufferedImage[][] { { img0h, img0 } }, 145, 210 - 6);
@@ -129,7 +139,11 @@ public class HeroParse {
           }
           BufferedImage imgp2 = null;
           if (hero.getP2() != null) {
-            hero = map.get(hero.getP2().getUnitId());
+            String unitId2 = hero.getP2().getUnitId();
+            hero = map.get(unitId2);
+            if(hero==null){
+              System.out.println(unitId2);
+            }
             imgp2 = ImageMerger.mergeImages(ImageMerger.readPath(hero.parseIconPath(), basePath), 64, 64);
 
             BufferedImage imgp2h = ImageMerger.readFile(fileFullPathMap.get((i * 3 + 3) + "" + (j + 1)));

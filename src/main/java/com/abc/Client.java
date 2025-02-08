@@ -29,10 +29,10 @@ import com.abc.sqlite.SqLiteJDBC;
 public class Client {
   public static void main(String[] args) throws Exception {
 
-    String excelName = "西7装备介绍_v2.0.5.xlsx";
-    SqLiteJDBC.setVersion("v2.0.5", "v2.0.0");
+    String excelName = "西7装备介绍_v2.0.7.xlsx";
+    SqLiteJDBC.setVersion("v2.0.7", "v2.0.0");
     String w3xliniPath = "D:\\war5-jass\\jass_plugin\\w3x2lni_zhCN_v2.5.2\\w3x2lni_zhCN_v2.5.2\\";
-    String assetPath = w3xliniPath + "0x7\\4AE2E0C9550414EB2F8BC32CE213965E\\";
+    String assetPath = w3xliniPath + "0x7\\13EAFB2AFF422D4A26AE941286A3ECF0\\";
     ExcelImageInsert.set(assetPath);
 
     List<Item> list = new IniRead().read("template/Custom/item.ini", assetPath + "table\\item.ini", Item.class);

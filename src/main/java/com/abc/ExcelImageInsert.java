@@ -30,7 +30,7 @@ public class ExcelImageInsert {
         ExcelImageInsert.set(assetPath);
         String blp = "war3mapImported\\BTNSpell_HuangWuMoFeng2.blp";
         // convertImageToPng(blp, new File("test.jpg"));
-        String inputFilePath = "C:\\Users\\76769\\Desktop\\demo\\html\\javafindjob1.github.io\\bilibili\\header\\chess.png";
+        String inputFilePath = "C:\\Users\\76769\\Desktop\\demo\\html\\javafindjob1.github.io\\x7\\x7-heros.png";
         String outputFilePath = inputFilePath.replace(".png", ".webp");
         // 获取 JPG 图像写入器
         Iterator<ImageWriter> writers = ImageIO.getImageWritersByMIMEType("image/webp");
@@ -73,6 +73,7 @@ public class ExcelImageInsert {
         String[] basePath = {
                 assetPath + "resource\\",
                 "D:\\war5-jass\\jass_plugin\\w3x2lni_zhCN_v2.5.2\\war3mpq\\",
+                "D:\\war5-jass\\jass_plugin\\w3x2lni_zhCN_v2.5.2\\war3patch\\",
                 "D:\\war5-jass\\jass_plugin\\w3x2lni_zhCN_v2.5.2\\war3xmpq\\" };
 
         String fullPath = null;

@@ -216,13 +216,21 @@ public class HeroIntroParse {
       }
     }
     baseHeroSet.putAll(tmpMap);
-
+    // 补充幸运女神
+    String[] strings = baseHeroSet.get("H01H");
+    baseHeroSet.put("H02H",strings);
+    strings[2] = "H02H";
+    System.out.println(strings[0]);
+    System.out.println(strings[1]);
+    System.out.println(strings[2]);
     System.out.println(idItemMap.get("H01E"));
 
     Map<String, String[]> juanzhouItemMap = HeroItemParse.parse(functions, heroNameArrMap, idItemMap);
 
     Map<String, Hero> heroResultMap = new HashMap<>();
 
+    System.out.println(heroMap.get("H01H"));
+    System.out.println(heroMap.get("H02H"));
     for (Entry<String, UnitDetail> entry : heroMap.entrySet()) {
       String uid = entry.getKey();
       UnitDetail unitDetail = entry.getValue();

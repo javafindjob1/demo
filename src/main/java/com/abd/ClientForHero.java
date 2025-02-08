@@ -13,6 +13,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,13 +80,27 @@ public class ClientForHero {
     HeroParse heroParse = new HeroParse();
     Map<String, HeroData> map = heroParse.wrapHeroData(abilityMap, idUnitMap, idItemMap, funList);
 
-   try(BufferedWriter br = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("C:\\Users\\76769\\Desktop\\demo\\html\\javafindjob1.github.io\\mp\\mp-data.js"),  "utf-8"))){
+    try (BufferedWriter br = new BufferedWriter(new OutputStreamWriter(
+        new FileOutputStream("C:\\Users\\76769\\Desktop\\demo\\html\\javafindjob1.github.io\\mp\\mp-data.js"),
+        "utf-8"))) {
       br.write("var mpdata = " + JSON.toJSONString(map));
     }
     System.out.println(JSON.toJSONString(map.get("O001"), SerializerFeature.PrettyFormat));
 
 
- Map<String, File> fileFullPathMap = new HashMap<>();
+    
+    List<UnitDetail> u = new ArrayList<>();
+    for(String unitId :  map.keySet()){
+      UnitDetail detail = idUnitMap.get(unitId);
+      u.add(detail);
+    }
+    MdxRead.copyMdx(u);
+
+
+    if (true)
+      return;
+
+    Map<String, File> fileFullPathMap = new HashMap<>();
     File dir = new File("D:\\war5-jass\\jass_plugin\\新建文件夹3");
     File[] listFiles = dir.listFiles();
     Pattern pa = Pattern.compile("^(\\d+).*");
@@ -98,10 +113,10 @@ public class ClientForHero {
     }
 
     String[][] heroArr = new String[][] {
-      {"O000", "E011", "E004", "E008", "E016", "H00S"},
-      {"O001", "O003", "E015", "H006", "H007", "H00H"},
-      {"O004", "E01H", "O00M", "N06G", "E014", "H005"},
-      {"N02D", "", "", "O002", "H00B", "H00U"},
+        { "O000", "E011", "E004", "E008", "E016", "H00S" },
+        { "O001", "O003", "E015", "H006", "H007", "H00H" },
+        { "O004", "E01H", "O00M", "N06G", "E014", "H005" },
+        { "N02D", "", "", "O002", "H00B", "H00U" },
     };
     HeroData hero = map.get("O000");
     String[][] iconPaths = hero.parseIconPath();
@@ -148,23 +163,23 @@ public class ClientForHero {
     BufferedImage mergedImage = ImageMerger.mergeImages(imgHero, 420 + 145, 420 - 6);
 
     String[][] panel = new String[][] {
-        { 
-          "ATTshuxing-str.webp",
-          "ATTshuxing-agi.webp",
-          "ATTshuxing-int.webp",
-          "TYPElightdef.webp",
-          "TYPEdarkdef.webp",
-          "TYPEwaterdef.webp",
-          "TYPEfiredef.webp",
-          "TYPEstonedef.webp",
-          "TYPEwinddef.webp",
-          "TYPEwateratk.webp",
-          "TYPEdarkatk.webp",
-          "TYPElightatk.webp",
-          "TYPEstoneatk.webp",
-          "TYPEstoneatk.webp",
-          "TYPEwindatk.webp",
-          "TYPEfireatk.webp",
+        {
+            "ATTshuxing-str.webp",
+            "ATTshuxing-agi.webp",
+            "ATTshuxing-int.webp",
+            "TYPElightdef.webp",
+            "TYPEdarkdef.webp",
+            "TYPEwaterdef.webp",
+            "TYPEfiredef.webp",
+            "TYPEstonedef.webp",
+            "TYPEwinddef.webp",
+            "TYPEwateratk.webp",
+            "TYPEdarkatk.webp",
+            "TYPElightatk.webp",
+            "TYPEstoneatk.webp",
+            "TYPEstoneatk.webp",
+            "TYPEwindatk.webp",
+            "TYPEfireatk.webp",
         }
     };
     BufferedImage img0 = ImageMerger.mergeImages(ImageMerger.readPath(panel, basePath), 64, 64);
@@ -172,8 +187,6 @@ public class ClientForHero {
     mergedImage = ImageMerger.mergeImages(new BufferedImage[][] { { mergedImage }, { img0 } }, 64, 64);
 
     ImageIO.write(mergedImage, "webp", new File(basePath + "out.webp"));
-
-
 
   }
 }

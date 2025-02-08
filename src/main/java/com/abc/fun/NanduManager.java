@@ -21,14 +21,19 @@ public class NanduManager {
   public boolean updateIfLoad(int j, String row) {
 
     Matcher matcher = pattern.matcher(row);
-    if(matcher.find()){
+    if (matcher.find()) {
       String fuhao = matcher.group(1);
       int k = Integer.parseInt(matcher.group(2));
 
       switch (fuhao) {
         case ">=":
           this.desc1 = "(难度" + k + "及以上)";
-          this.desc2 = "(难度" + (k-1) + "及以下)";
+          this.desc2 = "(难度" + (k - 1) + "及以下)";
+          this.desc = this.desc1;
+          break;
+        case "==":
+          this.desc1 = "(难度" + k + ")";
+          this.desc2 = "(难度" + (k - 1) + "及以下)";
           this.desc = this.desc1;
           break;
         default:
@@ -36,24 +41,24 @@ public class NanduManager {
           break;
       }
       return true;
-    }else if(row.matches("if \\w+([=]+)true then")){
+    } else if (row.matches("if \\w+([=]+)true then")) {
       this.desc1 = "(难度" + 6 + ")";
       this.desc2 = "(难度" + 5 + "及以下)";
       this.desc = this.desc1;
       return true;
     }
     return false;
-    
+
   }
 
   public void updateElse(int j) {
-    if(j == this.j){
+    if (j == this.j) {
       this.desc = this.desc2;
     }
   }
 
   public void updateEndif(int j) {
-    if(j == this.j){
+    if (j == this.j) {
       this.desc = null;
     }
   }
