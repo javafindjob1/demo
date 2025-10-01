@@ -1,20 +1,12 @@
-package com.abd;
+package com.mp;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.BufferedWriter;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.channels.FileChannel;
-import java.util.ArrayList;
+import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import io.netty.util.CharsetUtil;
 
 public class MdxRead {
   public static void main(String[] args) throws Exception {
@@ -34,156 +26,48 @@ public class MdxRead {
     Map<String, UnitDetail> unitMap = new UnitParse().parse(list);
     List<UnitDetail> u = unitMap.values().stream().filter(e -> {
       // return e.getType().contains("giant");
-      return e.getId().contains("N02D");
+      return e.getId().contains("E011");
       // return !e.getAbilList().contains("AInv");
       // return e.getAbilList().contains("AInv");
     }).collect(Collectors.toList());
 
-    copyMdx(u);
+  
+    String pathPre = "html\\javafindjob1.github.io\\mp\\mp-mdx\\";
+    // String pathPre = "C:\\Users\\76769\\Desktop\\demo\\test\\mdxfiles\\";
+    copyMdx(u, assetPath + "resource\\", pathPre);
   }
 
-  public static void copyMdx(List<UnitDetail> u) {
-    for (UnitDetail unit : u) {
+  public static void copyMdx(List<UnitDetail> u, String srcPath, String outputPath) {
+    Map<String, List<String>> noexistblp = new HashMap<>();
+    Map<String, Map<String, String>> dataMap = new HashMap<>();
+    List<String> paths = u.stream().map(unit -> {
       String mdxfile = unit.getFile();
       System.out.println("单位名称:" + unit.getName() + ",propName:" + unit.getPropernames());
-
-      try {
-        parseMdx(unit.getId(), mdxfile);
-      } catch (IOException e1) {
-        e1.printStackTrace();
-        System.out.println("文件未找到");
-      }
-    }
-
-  }
-
-  public static void parseMdx(String unitId, String mdxfile) throws IOException {
-    if (!mdxfile.endsWith("mdx")) {
-      if (mdxfile.endsWith("mdl")) {
-        mdxfile = mdxfile.replace(".mdl", ".mdx");
-      } else if (mdxfile.indexOf(".") > -1) {
-        System.out.println("文件名不合法:" + mdxfile);
-      } else {
-        mdxfile += ".mdx";
-      }
-    }
-
-    String mdxFullPath = ExcelImageInsert.combineFullPath(mdxfile);
-
-    List<String> noexistblp = new ArrayList<>();
-    Map<String, String> dataMap = new HashMap<>();
-    dataMap.put("mdx", mdxFullPath);
-    List<String> blps = getTextures(mdxFullPath);
-
-    blps.stream().forEach(blp -> {
-      System.out.println("开始处理:" + blp);
-      while (true) {
-        try {
-          String fullPath = ExcelImageInsert.combineFullPath(blp);
-          dataMap.put(blp, fullPath);
-          System.out.println("贴图全路径:" + fullPath);
-          break;
-        } catch (FileNotFoundException e) {
-          if (blp.length() > 5) {
-            blp = blp.substring(1).trim();
-          }else{
-            System.out.println("贴图没有找到:" + blp);
-            break;
-          }
+      if (!mdxfile.endsWith("mdx")) {
+        if (mdxfile.endsWith("mdl")) {
+          mdxfile = mdxfile.replace(".mdl", ".mdx");
+        } else if (mdxfile.indexOf(".") > -1) {
+          System.out.println("文件名不合法:" + mdxfile);
+        } else {
+          mdxfile += ".mdx";
         }
+        System.out.println(mdxfile);
       }
-    });
-
-    System.out.println(noexistblp);
-    {
-
-      String pathPre = "C:\\Users\\76769\\Desktop\\demo\\html\\javafindjob1.github.io\\mp\\mp-mdx\\";
-
-      String mdxf = dataMap.remove("mdx");
-      copyfile(mdxf, pathPre + unitId + ".mdx");
-      dataMap.forEach((blp, blpPath) -> {
-        copyfile(blpPath, pathPre + blp);
-      });
-    }
-  }
-
-  public static void createPath(File file) {
-    if (file.exists()) {
-      return;
-    } else {
-      createPath(file.getParentFile());
-      file.mkdir();
-    }
-  }
-
-  public static void copyfile(String srcPath, String destPath) {
-    destPath = destPath.toLowerCase();
-    createPath(new File(destPath).getParentFile());
-
+      String path = unit.getId() + " " + mdxfile.replaceAll("\\\\\\\\", "\\\\");
+      return path;
+    }).collect(Collectors.toList());
     try (
-        FileInputStream in = new FileInputStream(srcPath);
-        FileChannel fc = in.getChannel();
+        BufferedWriter br = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("D:\\mdx.txt"), "utf-8"));) {
 
-        FileOutputStream os = new FileOutputStream(destPath);
-        FileChannel fcc = os.getChannel();) {
-      fc.transferTo(0, fc.size(), fcc);
+      br.write(srcPath + "\n");
+      br.write(outputPath + "\n");
+      for (String path : paths) {
+        br.write(path+"\n");
+      }
     } catch (Exception e) {
-      e.printStackTrace();
-      System.out.println("复制出错!!" + srcPath);
-      System.out.println("复制出错!!" + destPath);
-      throw new RuntimeException();
+
     }
-
-  }
-
-  private static List<String> getTextures(String mdxPath) throws IOException, FileNotFoundException {
-    List<String> list = new ArrayList<>();
-    try (BufferedReader br = new BufferedReader(
-        new InputStreamReader(new FileInputStream(mdxPath), CharsetUtil.US_ASCII))) {
-      String line = null;
-      while ((line = br.readLine()) != null) {
-        // TEXS$units\Creeps\MurlocFleshEater\MurlocFleshEater.blpTextures\TeamGlow00.blp
-        if (line.contains("TEXS")) {
-
-          System.out.println(line);
-          if (line.indexOf(".blp") > -1) {
-            List<String> textures = parseTexture(line, ".blp");
-            list.addAll(textures);
-          }
-
-          if (line.indexOf(".tga") > -1) {
-            List<String> textures = parseTexture(line, ".tga");
-            list.addAll(textures);
-          }
-
-        }
-      }
-    }
-    return list;
-  }
-
-  public static List<String> parseTexture(String line, String key) throws IOException, FileNotFoundException {
-    int i = line.indexOf("TEXS") + 4;
-
-    List<String> list = new ArrayList<>();
-
-    int j = -1;
-    while ((j = line.indexOf(key, i)) > -1) {
-      j += key.length();
-      String blp = line.substring(i, j);
-      System.out.println(blp);
-      for (int j2 = 0; j2 < blp.length(); j2++) {
-        char charAt = blp.charAt(j2);
-        if (charAt >= 'A' && charAt <= 'Z' || charAt >= 'a' && charAt <= 'z' || charAt >= '0' && charAt <= '9') {
-          blp = blp.substring(j2);
-          break;
-        }
-      }
-      list.add(blp);
-      i = j;
-    }
-
-    return list;
+    System.out.println(noexistblp);
   }
 
 }

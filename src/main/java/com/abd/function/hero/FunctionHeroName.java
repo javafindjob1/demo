@@ -1,11 +1,11 @@
-package com.abd.function.hero;
+package com.mp.function.hero;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.abd.Function;
+import com.mp.Function;
 
 /**
  * 
@@ -22,8 +22,8 @@ public class FunctionHeroName {
     
 
     Map<String, String> heroMap = new HashMap<>();
-    heroMap.putAll(getHeroMap(funMap.get("Trig_1_________________________________________uActions")));
     heroMap.putAll(getHeroMap2(funMap.get("Trig_9___________________uActions")));
+    heroMap.putAll(getHeroMap(funMap.get("Trig_1_________________________________________uActions")));
 
     return heroMap;
   }
@@ -38,7 +38,24 @@ public class FunctionHeroName {
         if(matcher.find()){
           String udgHeroName = matcher.group(1);
           String heroName = matcher.group(2);
-          heroMap.put(heroName, udgHeroName);
+
+          if(udgHeroName.endsWith("V")){
+            // 部分皮英雄 隐暗射手 耀光射手
+            udgHeroName = udgHeroName.substring(0, udgHeroName.length() - 1);
+            heroMap.put(heroName, udgHeroName);
+          }else if(udgHeroName.endsWith("PLUS")){
+            // 部分皮英雄 万
+            udgHeroName = udgHeroName.substring(0, udgHeroName.length() - 4);
+            heroMap.put(heroName, udgHeroName);
+          }else if(udgHeroName.endsWith("TLFLP")){
+            // 部分皮英雄 熊猫
+            udgHeroName = udgHeroName.substring(0, udgHeroName.length() - 1);
+            heroMap.put(heroName, udgHeroName);
+          }else{
+            // 基本英雄 
+            heroMap.put(heroName, udgHeroName);
+            heroMap.put(udgHeroName, heroName);
+          }
         }
       }
     }

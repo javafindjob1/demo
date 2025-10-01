@@ -1,6 +1,4 @@
-package com.abd;
-
-import java.util.Map;
+package com.mp;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

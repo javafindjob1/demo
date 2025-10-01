@@ -1,4 +1,4 @@
-package com.abd;
+package com.mp;
 
 public interface IDropTrigger {
   public String getId();

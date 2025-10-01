@@ -1,10 +1,8 @@
-package com.abd;
+package com.mp;
 
-import com.abc.fun.Hero;
-import com.abd.function.HeroData;
-import com.abd.sqlite.SqLiteJDBC;
+import com.mp.function.HeroData;
+import com.mp.sqlite.SqLiteJDBC;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.util.ImageMerger;
 
@@ -22,16 +20,14 @@ import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
 public class ClientForHero {
   public static void main(String[] args) throws Exception {
 
-    String excelName = "梦想远景装备介绍_v1.1.38.xlsx";
-    SqLiteJDBC.setVersion("v1.1.38", "v1.1.28");
+    String excelName = "梦想远景装备介绍_v1.2.2.xlsx";
+    SqLiteJDBC.setVersion("v1.2.2", "v1.1.49");
 
     String w3xliniPath = "D:\\war5-jass\\jass_plugin\\w3x2lni_zhCN_v2.5.2\\w3x2lni_zhCN_v2.5.2\\";
-    String assetPath = w3xliniPath + "0mp\\4FFD4CA60115240BEFBD7D6278E38E2F\\";
+    String assetPath = w3xliniPath + "0mp\\6A2A0B8571B523675FBBE445BD19824B\\";
     ExcelImageInsert.set(assetPath);
 
     List<Item> list = new IniRead().read("template/Custom/item.ini", assetPath + "table\\item.ini", Item.class);
@@ -81,7 +77,7 @@ public class ClientForHero {
     Map<String, HeroData> map = heroParse.wrapHeroData(abilityMap, idUnitMap, idItemMap, funList);
 
     try (BufferedWriter br = new BufferedWriter(new OutputStreamWriter(
-        new FileOutputStream("C:\\Users\\76769\\Desktop\\demo\\html\\javafindjob1.github.io\\mp\\mp-data.js"),
+        new FileOutputStream("html\\javafindjob1.github.io\\mp\\mp-data.js"),
         "utf-8"))) {
       br.write("var mpdata = " + JSON.toJSONString(map));
     }
@@ -94,7 +90,7 @@ public class ClientForHero {
       UnitDetail detail = idUnitMap.get(unitId);
       u.add(detail);
     }
-    MdxRead.copyMdx(u);
+    MdxRead.copyMdx(u, assetPath+"resource\\", "html\\javafindjob1.github.io\\mp\\mp-mdx\\");
 
 
     if (true)
@@ -116,7 +112,7 @@ public class ClientForHero {
         { "O000", "E011", "E004", "E008", "E016", "H00S" },
         { "O001", "O003", "E015", "H006", "H007", "H00H" },
         { "O004", "E01H", "O00M", "N06G", "E014", "H005" },
-        { "N02D", "", "", "O002", "H00B", "H00U" },
+        { "N02D", "O00X", "E01N", "O002", "H00B", "H00U" },
     };
     HeroData hero = map.get("O000");
     String[][] iconPaths = hero.parseIconPath();

@@ -1,4 +1,4 @@
-package com.abd.function;
+package com.mp.function;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -9,9 +9,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.abd.FunctionDetail;
-import com.abd.FunctionDetail.DropInfo;
-import com.abd.Function;
+import com.mp.FunctionDetail;
+import com.mp.FunctionDetail.DropInfo;
+import com.mp.Function;
 
 public class FunctionWaJue {
 

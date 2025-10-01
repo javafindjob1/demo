@@ -1,6 +1,6 @@
-package com.abd;
+package com.mp;
 
-import com.abd.sqlite.SqLiteJDBC;
+import com.mp.sqlite.SqLiteJDBC;
 import java.util.List;
 import java.util.Map;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -8,11 +8,11 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 public class Client {
   public static void main(String[] args) throws Exception {
 
-    String excelName = "梦想远景装备介绍_v1.1.38.xlsx";
-    SqLiteJDBC.setVersion("v1.1.38", "v1.1.28");
+    String excelName = "梦想远景装备介绍_v1.2.4.xlsx";
+    SqLiteJDBC.setVersion("v1.2.4", "v1.2.2");
 
     String w3xliniPath = "D:\\war5-jass\\jass_plugin\\w3x2lni_zhCN_v2.5.2\\w3x2lni_zhCN_v2.5.2\\";
-    String assetPath = w3xliniPath + "0mp\\4FFD4CA60115240BEFBD7D6278E38E2F\\";
+    String assetPath = w3xliniPath + "0mp\\6D2E2DD6EA49D0EDEDCEAA7B1AFE35E8\\";
     ExcelImageInsert.set(assetPath);
 
     List<Item> list = new IniRead().read("template/Custom/item.ini", assetPath + "table\\item.ini", Item.class);
@@ -58,8 +58,8 @@ public class Client {
     // 归纳整理物品的获得途径
     itemParse.wrapDropString(funDetailList, idUnitMap, destructableMap);
 
-    HeroParse heroParse = new HeroParse();
-    heroParse.wrapHero(abilityMap, idUnitMap, idItemMap, funList);
+    // HeroParse heroParse = new HeroParse();
+    // heroParse.wrapHero(abilityMap, idUnitMap, idItemMap, funList);
 
     // 生成excel
     XSSFWorkbook workbook = new XSSFWorkbook();
@@ -67,10 +67,10 @@ public class Client {
     unitSheet.insert("单位", unitParse.getDropUnitOrder());
     unitSheet.insert("单位(场景)", unitParse.getDropUnit());
 
-    HeroSheet heroSheet = new HeroSheet(workbook);
-    heroSheet.insert("(力量", heroParse.getOrder(UnitDetail.Primary.STR));
-    heroSheet.insert("敏捷", heroParse.getOrder(UnitDetail.Primary.AGI));
-    heroSheet.insert("智力)", heroParse.getOrder(UnitDetail.Primary.INT));
+    // HeroSheet heroSheet = new HeroSheet(workbook);
+    // heroSheet.insert("(力量", heroParse.getOrder(UnitDetail.Primary.STR));
+    // heroSheet.insert("敏捷", heroParse.getOrder(UnitDetail.Primary.AGI));
+    // heroSheet.insert("智力)", heroParse.getOrder(UnitDetail.Primary.INT));
 
     ItemSheet itemSheet = new ItemSheet(workbook);
     itemSheet.insert("武器", itemParse.getDropUnit("武器"));

@@ -1,27 +1,24 @@
-package com.abd;
+package com.mp;
 
 import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.*;
 
-import com.abd.sqlite.SqLiteJDBC;
+import com.mp.sqlite.SqLiteJDBC;
 
 import java.io.*;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-public class UnitSheet extends AbstractSheet{
+public class UnitSheet extends AbstractSheet {
     private XSSFCreationHelper creationHelper;
-    private Map<String,ItemDetail> idItemMap;
-    
-    public UnitSheet(XSSFWorkbook workbook, Map<String,ItemDetail> idItemMap) {
+    private Map<String, ItemDetail> idItemMap;
+
+    public UnitSheet(XSSFWorkbook workbook, Map<String, ItemDetail> idItemMap) {
         this.workbook = workbook;
         this.creationHelper = workbook.getCreationHelper();
         this.idItemMap = idItemMap;
@@ -67,7 +64,7 @@ public class UnitSheet extends AbstractSheet{
                 appendRichText(workbook, richText, (short) 30, "#FF0000",
                         "玉露、TFBOYS-王俊凯（备注，点评）");
                 cell.setCellValue(richText);
-            } 
+            }
             {
                 Row row = sheet.createRow(++dataI);
                 row.setHeight(height);
@@ -88,7 +85,7 @@ public class UnitSheet extends AbstractSheet{
             // 设置单元格值为超链接
             XSSFRichTextString richText = new XSSFRichTextString();
             appendRichText(workbook, richText, (short) 10, "#000000",
-            "【腾讯文档】梦想远景装备介绍_目录");
+                    "【腾讯文档】梦想远景装备介绍_目录");
             cell.setCellValue(richText);
         }
         {
@@ -132,21 +129,42 @@ public class UnitSheet extends AbstractSheet{
             }
         }
     }
+
     private void updateInfo(XSSFSheet sheet, AtomicInteger dataI, String message, List<ItemDetail> list) {
+        String itemType = null;
         for (ItemDetail item : list) {
+
+            if (!item.getType().equals(itemType)) {
+                itemType = item.getType();
+                Row row = sheet.createRow(dataI.incrementAndGet());
+                Cell cell = row.createCell(1);
+                XSSFRichTextString richText = new XSSFRichTextString();
+                appendRichText(workbook, richText, (short) 12, "#b65656",
+                        itemType);
+
+                cell.setCellValue(richText);
+            }
             // 新增S+武器(龙翼)
             Row row = sheet.createRow(dataI.incrementAndGet());
             // 创建一个新的单元格
             Cell cell = row.createCell(1);
-            
+
             // 设置单元格值为超链接
             Hyperlink link = creationHelper.createHyperlink(HyperlinkType.DOCUMENT);
-            link.setAddress("'"+item.getType()+"'!B" + idItemMap.get(item.getId()).getRowNum());
-            cell.setHyperlink(link);
+            try{
+                link.setAddress("'" + item.getType() + "'!B" + idItemMap.get(item.getId()).getRowNum());
+                cell.setHyperlink(link);
+            }catch(Exception e){
+                System.out.println(message);
+                System.out.println(item);
+                System.out.println(item.getId());
+                System.out.println(idItemMap.get(item.getId()));
+            }
 
             XSSFRichTextString richText = new XSSFRichTextString();
             StringBuffer buf = new StringBuffer();
-            buf.append(message).append("[").append(item.getLevel()).append(" ").append(item.getType()).append("]").append(item.getName());
+            buf.append(message).append("[").append(item.getLevel()).append(" ").append(item.getType()).append("]")
+                    .append(item.getName());
             if (item.getHero().length() > 0) {
                 buf.append("(").append(item.getHero()).append(")");
             }
@@ -155,11 +173,12 @@ public class UnitSheet extends AbstractSheet{
             cell.setCellValue(richText);
         }
     }
+
     public void insert(String sheetName, Map<String, List<UnitDetail>> mapList) throws IOException {
         XSSFSheet sheet = workbook.createSheet(sheetName);
 
         int ii = 0;
-        sheet.setColumnWidth(ii++, 2 * 256+60); // 单位为1/256个字符宽度
+        sheet.setColumnWidth(ii++, 2 * 256 + 60); // 单位为1/256个字符宽度
         sheet.setColumnWidth(ii++, 6 * 256); // 单位为1/256个字符宽度
         sheet.setColumnWidth(ii++, 10 * 256); // 单位为1/256个字符宽度
         sheet.setColumnWidth(ii++, 15 * 256); // 单位为1/256个字符宽度
@@ -286,7 +305,8 @@ public class UnitSheet extends AbstractSheet{
 
             for (int i = 0; i < list.size(); i++) {
                 UnitDetail unit = list.get(i);
-                if(unit==null)continue;
+                if (unit == null)
+                    continue;
                 dataI++;
                 Row row = sheet.createRow(dataI);
                 int col = 0;
@@ -319,13 +339,14 @@ public class UnitSheet extends AbstractSheet{
                             buf.append(item.getItemName());
                             buf.append("、");
                         });
-                        if(buf.length()>0){
-                            buf.setLength(buf.length()-1);
+                        if (buf.length() > 0) {
+                            buf.setLength(buf.length() - 1);
                         }
                     }
 
                     insertDescription(row, col++, cellStyle2, workbook, "|cff99cc00" + buf.toString());
-                    insertDescription(row, col++, cellStyle2, workbook, (short)11, "|cff99cc00" + unit.getMark() == null ? "" : unit.getMark());
+                    insertDescription(row, col++, cellStyle2, workbook, (short) 11,
+                            "|cff99cc00" + unit.getMark() == null ? "" : unit.getMark());
                     // ExcelImageInsert.drawingBlp(sheet, unit.getArt(), 0, dataI, 1, 1, 1);
 
                 } catch (Exception e2) {
@@ -335,17 +356,16 @@ public class UnitSheet extends AbstractSheet{
                 }
 
                 // for (int j = 0; j < row.getLastCellNum(); j++) {
-                //     Cell cell = row.getCell(j);
-                //     if (cell != null) {
-                //         cell.setCellStyle(cellStyle);
-                //     }
+                // Cell cell = row.getCell(j);
+                // if (cell != null) {
+                // cell.setCellStyle(cellStyle);
+                // }
                 // }
 
             }
         }
 
     }
-
 
     public static void main(String[] args) throws IOException {
 

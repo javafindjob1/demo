@@ -1,18 +1,17 @@
-package com.abd.function;
+package com.mp.function;
 
 import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.abd.Function;
-import com.abd.FunctionDetail;
-import com.abd.MapUtil;
-import com.abd.FunctionDetail.DropInfo;
+import com.mp.Function;
+import com.mp.FunctionDetail;
+import com.mp.MapUtil;
+import com.mp.FunctionDetail.DropInfo;
 
 public class FunctionUnitDrop {
   Map<String, List<DropInfo>> itemPoolMap;

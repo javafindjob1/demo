@@ -1,10 +1,10 @@
-package com.abd;
+package com.mp;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.*;
 
-import com.abd.sqlite.SqLiteJDBC;
+import com.mp.sqlite.SqLiteJDBC;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -41,7 +41,7 @@ public class ItemSheet extends AbstractSheet{
                             db.insertData(item);
                         }catch(SQLException e){
                             // 主键冲突
-                            System.out.println("主键冲突");
+                            System.out.println("插入主键冲突: "+item.getId());
                         }
                     }
                 }

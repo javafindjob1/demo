@@ -1,4 +1,4 @@
-package com.abd;
+package com.mp;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -12,11 +12,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
 import javax.imageio.plugins.jpeg.JPEGImageReadParam;
 import javax.imageio.stream.ImageInputStream;

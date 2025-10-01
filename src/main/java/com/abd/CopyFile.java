@@ -1,9 +1,7 @@
-package com.abd;
+package com.mp;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.nio.channels.FileChannel;
 
 public class CopyFile {
   

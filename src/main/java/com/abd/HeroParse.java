@@ -1,4 +1,4 @@
-package com.abd;
+package com.mp;
 
 import java.text.Collator;
 import java.util.ArrayList;
@@ -10,14 +10,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import com.abd.UnitDetail.Primary;
-import com.abd.function.HeroData;
-import com.abd.function.HeroData.ViewData;
-import com.abd.function.hero.FunctionHeroDaZhaoAndCore;
-import com.abd.function.hero.FunctionHeroJianjieOrDaZhao;
-import com.abd.function.hero.FunctionHeroMainProp;
-import com.abd.function.hero.FunctionHeroName;
-import com.abd.function.hero.Hero;
+import com.mp.UnitDetail.Primary;
+import com.mp.function.HeroData;
+import com.mp.function.HeroData.ViewData;
+import com.mp.function.hero.FunctionHeroDaZhaoAndCore;
+import com.mp.function.hero.FunctionHeroJianjieOrDaZhao;
+import com.mp.function.hero.FunctionHeroMainProp;
+import com.mp.function.hero.FunctionHeroName;
+import com.mp.function.hero.Hero;
 
 public class HeroParse extends AbstractParse {
   private Map<String, Hero[]> res;
@@ -67,51 +67,23 @@ public class HeroParse extends AbstractParse {
 
         // 主要属性
         String udgheroname = udgHeroNameMap.get(unit.getId());
+        String baseUserId = udgHeroNameMap.get(udgheroname);
         String mainprop = udgHeroMainPropMap.get(udgheroname);
         hero.setMainPropDesc(mainprop);
 
-        List<String> jianjieOrDazhaoList = udgHeroJianjieOrDaZhaoMap.get(unit.getId());
-        if (jianjieOrDazhaoList == null) {
-          // N06U
-          for (Entry<String, UnitDetail> e : unitMap.entrySet()) {
-            UnitDetail unitDetail = e.getValue();
-            if (!unit.getId().equals(unitDetail.getId()) && unit.getName().equals(unitDetail.getName())) {
-              jianjieOrDazhaoList = udgHeroJianjieOrDaZhaoMap.get(e.getKey());
-              hero.setPi("皮");
-              String[] team = new String[2];
-              team[0] = unitDetail.getId();
-              team[1] = unit.getId();
-              udgHeroTeam.put(unitDetail.getId(), team);
-              break;
-            }
-          }
+        List<String> jianjieOrDazhaoList = udgHeroJianjieOrDaZhaoMap.get(baseUserId);
+        if (baseUserId.equals(unit.getId())) {
+          String[] team = MapUtil.getNotNull(udgHeroTeam, baseUserId, ()->new String[2]);
+          team[0] = baseUserId;
         } else {
-          // 单独没有第二英雄
-          if (null == udgHeroTeam.get(unit.getId())) {
-            String[] team = new String[2];
-            team[0] = unit.getId();
-            udgHeroTeam.put(unit.getId(), team);
-          }
-
+          hero.setPi("皮");
+          String[] team = MapUtil.getNotNull(udgHeroTeam, baseUserId, ()->new String[2]);
+          team[1] = unit.getId();
         }
 
-        if (jianjieOrDazhaoList == null) {
-
-          for (Entry<String, String> e : udgHeroNameMap.entrySet()) {
-            if (!e.getKey().equals(unit.getId()) && udgheroname.equals(e.getValue())) {
-              jianjieOrDazhaoList = udgHeroJianjieOrDaZhaoMap.get(e.getKey());
-
-              String[] team = new String[2];
-              team[0] = e.getKey();
-              team[1] = unit.getId();
-              udgHeroTeam.put(e.getKey(), team);
-              break;
-            }
-          }
-
-        }
         if (jianjieOrDazhaoList == null) {
           System.out.println(unit.getId() + "没有找到简介");
+          continue;
         }
 
         for (String jianjieOrDazhao : jianjieOrDazhaoList) {
@@ -231,8 +203,8 @@ public class HeroParse extends AbstractParse {
     FunctionHeroName FunctionHeroName = new FunctionHeroName();
     // <O004 , udg_ROCK>
     Map<String, String> udgHeroNameMap = FunctionHeroName.parse(funMap);
-    //手动补录工程大师皮肤
-    udgHeroNameMap.put("N00E", "udg_ONE");
+    // 手动补录工程大师皮肤
+    // udgHeroNameMap.put("N00E", "udg_ONE");
 
     FunctionHeroJianjieOrDaZhao FunctionHeroJianjieOrDaZhao = new FunctionHeroJianjieOrDaZhao();
     // <O004 , List<String>>
@@ -259,77 +231,36 @@ public class HeroParse extends AbstractParse {
       if ("giant".equals(unit.getType()) && ("111".equals(unit.getPoints()) || "222".equals(unit.getPoints()))) {
 
         HeroData hero = new HeroData();
-        // 会被重置
-        String baseUserId = unit.getId();
         hero.setUnitId(unit.getId());
 
         hero.setName(unit.getPropernames());
         hero.setPropernames(unit.getNameReal());
-        hero.setAttack(unit.getAtkType1Ori()+"," +unit.getAttack()+"," + unit.getRangeN1()+","+unit.getCool1());
-        hero.setArmor(unit.getDefTypeOri()+"," +unit.getDefReal()+","+unit.getSpd());
-        hero.setProp(unit.getPrimaryInt()+","+unit.getSTR()+","+unit.getAGI()+","+unit.getINT());
-        hero.setHp(unit.getHpReal()+"," + unit.getManaNReal());
+        hero.setAttack(
+            unit.getAtkType1Ori() + "," + unit.getAttack() + "," + unit.getRangeN1() + "," + unit.getCool1());
+        hero.setArmor(unit.getDefTypeOri() + "," + unit.getDefReal() + "," + unit.getSpd());
+        hero.setProp(unit.getPrimaryInt() + "," + unit.getSTR() + "," + unit.getAGI() + "," + unit.getINT());
+        hero.setHp(unit.getHpReal() + "," + unit.getManaNReal());
 
         heroMap.put(unit.getId(), hero);
 
         // 主要属性
         String udgheroname = udgHeroNameMap.get(unit.getId());
+        String baseUserId = udgHeroNameMap.get(udgheroname);
         String mainprop = udgHeroMainPropMap.get(udgheroname);
+        hero.setBaseUnitId(baseUserId);
 
-        List<String> jianjieOrDazhaoList = udgHeroJianjieOrDaZhaoMap.get(unit.getId());
-        if (jianjieOrDazhaoList == null) {
-          // N06U 针对隐暗射手
-          for (Entry<String, UnitDetail> e : unitMap.entrySet()) {
-            UnitDetail unitDetail = e.getValue();
-            if (!unit.getId().equals(unitDetail.getId()) && unit.getName().equals(unitDetail.getName())) {
-              jianjieOrDazhaoList = udgHeroJianjieOrDaZhaoMap.get(e.getKey());
-              hero.setPi("皮");
-              String[] team = new String[2];
-              team[0] = unitDetail.getId();
-              team[1] = unit.getId();
-
-              // 重置baseUnitId
-              baseUserId = team[0];
-              udgHeroTeam.put(unitDetail.getId(), team);
-              break;
-            }
-          }
+        List<String> jianjieOrDazhaoList = udgHeroJianjieOrDaZhaoMap.get(baseUserId);
+        String[] team = MapUtil.getNotNull(udgHeroTeam, baseUserId, () -> new String[2]);
+        if (baseUserId.equals(unit.getId())) {
+          team[0] = unit.getId();
         } else {
-          // 单独没有第二英雄
-          if (null == udgHeroTeam.get(unit.getId())) {
-            String[] team = new String[2];
-            team[0] = unit.getId();
-            udgHeroTeam.put(unit.getId(), team);
-          }
-
+          team[1] = unit.getId();
+          hero.setPi("皮");
         }
 
-        if(unit.getId().equals("N02D")){
-          System.out.println("找到工程大师");
-        }
-        if (jianjieOrDazhaoList == null) {
-
-          for (Entry<String, String> e : udgHeroNameMap.entrySet()) {
-            if (!e.getKey().equals(unit.getId()) && udgheroname.equals(e.getValue())) {
-              jianjieOrDazhaoList = udgHeroJianjieOrDaZhaoMap.get(e.getKey());
-
-              String[] team = new String[2];
-              team[0] = e.getKey();
-              team[1] = unit.getId();
-              // 重置baseUnitId
-              baseUserId = team[0];
-              udgHeroTeam.put(e.getKey(), team);
-              break;
-            }
-          }
-
-        }
         if (jianjieOrDazhaoList == null) {
           System.out.println(unit.getId() + "没有找到简介");
         }
-        
-        hero.setBaseUnitId(baseUserId);
-
 
         for (String jianjieOrDazhao : jianjieOrDazhaoList) {
           AbilityDetail abilityDetail = abilityMap.get(jianjieOrDazhao);
@@ -461,8 +392,6 @@ public class HeroParse extends AbstractParse {
     pMap.put("H007", "O00L");
     pMap.put("N02D", "O00T");
 
-   
-
     for (Entry<String, String[]> e : udgHeroTeam.entrySet()) {
       String[] team = e.getValue();
       HeroData[] heroTeam = new HeroData[2];
@@ -487,7 +416,7 @@ public class HeroParse extends AbstractParse {
           // 原皮移除一件专属装备，
           heroTeam[0].getItems().remove(heroTeam[0].getItems().size() - 1);
           // "E008" 多移除一件
-          if(team[0].equals("E008")){
+          if (team[0].equals("E008")) {
             heroTeam[0].getItems().remove(heroTeam[0].getItems().size() - 1);
           }
         }
@@ -505,7 +434,7 @@ public class HeroParse extends AbstractParse {
       }
 
       // 缪斯单独处理
-      if(heroData.getUnitId().equals("H00U")){
+      if (heroData.getUnitId().equals("H00U")) {
         {
           // 原皮内看到的皮肤信息
           ViewData viewData = new ViewData();
@@ -515,7 +444,7 @@ public class HeroParse extends AbstractParse {
           viewData.setIcon(tianlai.getArt());
           viewData.setDesc(tianlai.getUbertip());
           viewData.setUnitId(heroData.getUnitId());
-          heroTeam[0].setP1(viewData); 
+          heroTeam[0].setP1(viewData);
 
         }
 

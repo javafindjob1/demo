@@ -1,4 +1,4 @@
-package com.abd.sqlite;
+package com.mp.sqlite;
 
 import java.io.Closeable;
 import java.lang.reflect.Field;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 
-import com.abd.ItemDetail;
+import com.mp.ItemDetail;
 
 public class SqLiteJDBC implements Closeable {
 

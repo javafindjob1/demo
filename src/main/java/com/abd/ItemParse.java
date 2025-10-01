@@ -1,29 +1,25 @@
-package com.abd;
+package com.mp;
 
 import static org.junit.Assert.assertNotNull;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.Collator;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import com.abd.FunctionDetail.ItemAccessories;
+import com.mp.FunctionDetail.ItemAccessories;
 
 import lombok.Data;
 
@@ -87,6 +83,9 @@ public class ItemParse extends AbstractParse {
       case "神代·伊始":
         value = 82;
         break;
+      case "无终永恒":
+        value = 90;
+        break;
       case "特供":
         value = 1;
         break;
@@ -100,6 +99,7 @@ public class ItemParse extends AbstractParse {
   public Map<String, ItemDetail> parse(List<Item> items) {
     // 将装备和卷轴存到一起
     Map<String, ItemDetail> nameMap = new HashMap<>();
+    Map<String, ItemDetail> itemMap = new HashMap<>();
     items.forEach(e -> {
 
       String[] arr = splitName(e.getName());
@@ -108,20 +108,28 @@ public class ItemParse extends AbstractParse {
       }
 
       String name = arr[0];
-      ItemDetail itemDetail = nameMap.get(name);
-      if (itemDetail == null) {
-        itemDetail = new ItemDetail(name);
-        nameMap.put(name, itemDetail);
-      }
-
+      ItemDetail itemDetail = null;
       if (arr.length == 2) {
+        itemDetail = nameMap.get(name);
+        if (itemDetail == null) {
+          itemDetail = new ItemDetail(name);
+          nameMap.put(name, itemDetail);
+        }
         // 这是一张合成卷轴
         // 获取锻造材料
         String formula = splitSynthesisFormula(e.getDescription());
         itemDetail.setSynthesisFormula(formula);
         itemDetail.setJuanzhouId(e.getId());
         return;
+      } else {
+        // 木雕鸟像 多个重名的物品
+        itemDetail = nameMap.get(name);
+        if (itemDetail == null || itemDetail.getId()!=null&&!e.getId().equals(itemDetail.getId())) {
+          itemDetail = new ItemDetail(name);
+          nameMap.put(name, itemDetail);
+        }
       }
+      itemMap.put(e.getId(), itemDetail);
 
       itemDetail.setId(e.getId());
 
@@ -153,8 +161,7 @@ public class ItemParse extends AbstractParse {
     });
 
     this.nameMap = nameMap;
-    this.itemMap = nameMap.values().stream().collect(Collectors.toMap(ItemDetail::getId, Function.identity()));
-
+    this.itemMap = itemMap;
     // 锻造信息显示材料等级和类型
     this.itemMap.forEach((itemId, itemDetail) -> {
       String synthesisFormula = itemDetail.getSynthesisFormula();
@@ -182,6 +189,9 @@ public class ItemParse extends AbstractParse {
           break;
         case "frhg":// 潮涌剑
           itemDetail.setHero("暗礁之龙");
+          break;
+        case "dthb":// 无
+          itemDetail.setHero("永无");
           break;
         default:
           break;
@@ -283,6 +293,10 @@ public class ItemParse extends AbstractParse {
 
     Map<String, Map<String, Map<String, Integer>>> markType = getMarkType();
     System.out.println(markType);
+
+    String info = splitLevel(
+        "|cffbee7e9全能力 + 500|n法术抗性 + 20%|r|n|cffbeedc7凝（被动）：提高自身15%法术穿透。|r|n|cffecad9e终礼（主动）：使自身800码范围内的所有友方单位无敌3.5秒（但是无法免疫即死技能及部分冒险者的特殊被即死效果），冷却时间20秒。|r|n|cffe6ceac装备品级：|r|cff00ffff无|r|cff55ffff终|r|cffaaffff永|r恒|n|cffe6ceac装备类型：|r|cfffcd211饰品·唯一|n|r|n|cffd6d5b7这截手骨属于弗瑞兹王国最后的战士。当王国覆灭时，它为末代国王合上了双眼。|r");
+    System.out.println(info);
     if (true)
       return;
 
@@ -361,6 +375,7 @@ public class ItemParse extends AbstractParse {
 
   private static String splitLevel(String description) {
     String info = split("装备品级：|r", "|cffe6ceac", description).replaceAll("(\\|n)|(\\|r)", "");
+    info = info.replaceAll("\\|cff\\w{6}", "").replaceAll("\\|r", "");
     if (info.startsWith("|cff")) {
       info = info.substring(10);
     }
@@ -670,7 +685,7 @@ public class ItemParse extends AbstractParse {
         itemList.sort((o1, o2) -> {
           int v1 = o1.getLevelInt() - o2.getLevelInt();
           return v1 != 0 ? v1 : collator.compare(o1.getName(), o2.getName());
-        }); 
+        });
         resultMap.put(type, itemList);
         break;
       case "主线任务所需物品":

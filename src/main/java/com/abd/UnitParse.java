@@ -1,4 +1,4 @@
-package com.abd;
+package com.mp;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -24,7 +24,7 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.abd.FunctionDetail.DropInfo;
+import com.mp.FunctionDetail.DropInfo;
 
 import lombok.Data;
 
@@ -226,6 +226,7 @@ public class UnitParse extends AbstractParse {
       Collections.sort(unitCanDropList, (o1, o2) -> {
         return Integer.parseInt(o1.getHp()) - Integer.parseInt(o2.getHp());
       });
+      unitCanDropList.add(idUnitMap.get("o00W"));
       unitCanDropList.add(idUnitMap.get("n072"));
       unitCanDropList.add(idUnitMap.get("O00F"));
       map.put("按照血量排序", unitCanDropList);

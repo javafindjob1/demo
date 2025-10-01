@@ -1,4 +1,4 @@
-package com.abd;
+package com.mp;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -104,7 +104,7 @@ public abstract class AbstractSheet {
         }
 
         {
-            Pattern singleR = Pattern.compile("\\|r(?!\\|)");
+            Pattern singleR = Pattern.compile("\\|r(?!\\|c)");
             Matcher matcher = singleR.matcher(description);
             while (matcher.find()) {
                 String group = matcher.group();

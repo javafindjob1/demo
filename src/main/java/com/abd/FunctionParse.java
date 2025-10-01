@@ -1,4 +1,4 @@
-package com.abd;
+package com.mp;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -9,19 +9,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.abd.FunctionDetail.DropInfo;
-import com.abd.function.FunctionAllDrop;
-import com.abd.function.FunctionItemPool;
-import com.abd.function.FunctionJuanZhou;
-import com.abd.function.FunctionNewItemFormula;
-import com.abd.function.FunctionOnceDropByDestructable;
-import com.abd.function.FunctionOnceDropByUnit;
-import com.abd.function.FunctionSelect;
-import com.abd.function.FunctionSpecialJuanzhou;
-import com.abd.function.FunctionTaozhuang;
-import com.abd.function.FunctionUnitDrop;
-import com.abd.function.FunctionWaJue;
-import com.abd.function.hero.FunctionHero;
+import com.mp.FunctionDetail.DropInfo;
+import com.mp.function.FunctionAllDrop;
+import com.mp.function.FunctionItemPool;
+import com.mp.function.FunctionJuanZhou;
+import com.mp.function.FunctionNewItemFormula;
+import com.mp.function.FunctionOnceDropByDestructable;
+import com.mp.function.FunctionOnceDropByUnit;
+import com.mp.function.FunctionSelect;
+import com.mp.function.FunctionSpecialJuanzhou;
+import com.mp.function.FunctionTaozhuang;
+import com.mp.function.FunctionUnitDrop;
+import com.mp.function.FunctionWaJue;
+import com.mp.function.hero.FunctionHero;
 
 import lombok.Data;
 
@@ -37,6 +37,8 @@ public class FunctionParse {
       // 物品名称汉化
       fun.getItemMap().values().forEach(e -> {
         e.forEach(e2 -> {
+          System.out.println(e2.getItemId());
+          System.out.println(idItemMap.get(e2.getItemId()));
           e2.setItemName(idItemMap.get(e2.getItemId()).getName());
         });
       });

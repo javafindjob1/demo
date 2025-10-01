@@ -1,4 +1,4 @@
-package com.abd.function.hero;
+package com.mp.function.hero;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.abd.Function;
+import com.mp.Function;
 
 /**
  * 英雄大招
