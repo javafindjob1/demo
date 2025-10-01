@@ -1,4 +1,4 @@
-package com.mp;
+package com.abd;
 
 import java.text.Collator;
 import java.util.ArrayList;
@@ -10,14 +10,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import com.mp.UnitDetail.Primary;
-import com.mp.function.HeroData;
-import com.mp.function.HeroData.ViewData;
-import com.mp.function.hero.FunctionHeroDaZhaoAndCore;
-import com.mp.function.hero.FunctionHeroJianjieOrDaZhao;
-import com.mp.function.hero.FunctionHeroMainProp;
-import com.mp.function.hero.FunctionHeroName;
-import com.mp.function.hero.Hero;
+import com.abd.UnitDetail.Primary;
+import com.abd.function.HeroData;
+import com.abd.function.HeroData.ViewData;
+import com.abd.function.hero.FunctionHeroDaZhaoAndCore;
+import com.abd.function.hero.FunctionHeroJianjieOrDaZhao;
+import com.abd.function.hero.FunctionHeroMainProp;
+import com.abd.function.hero.FunctionHeroName;
+import com.abd.function.hero.Hero;
 
 public class HeroParse extends AbstractParse {
   private Map<String, Hero[]> res;

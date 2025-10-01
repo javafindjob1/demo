@@ -1,4 +1,4 @@
-package com.mp.function;
+package com.abd.function;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,9 +7,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.abc.MapUtil;
-import com.mp.Function;
-import com.mp.FunctionDetail;
-import com.mp.FunctionDetail.DropInfo;
+import com.abd.Function;
+import com.abd.FunctionDetail;
+import com.abd.FunctionDetail.DropInfo;
 
 public class FunctionSpecialJuanzhou {
   

@@ -17,7 +17,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageWriter;
 
 public class ExcelImageInsert {
-    private static String assetPath;
+    public static String assetPath;
 
     public static void set(String assetPath) {
         ExcelImageInsert.assetPath = assetPath;
@@ -30,7 +30,7 @@ public class ExcelImageInsert {
         ExcelImageInsert.set(assetPath);
         String blp = "war3mapImported\\BTNSpell_HuangWuMoFeng2.blp";
         // convertImageToPng(blp, new File("test.jpg"));
-        String inputFilePath = "C:\\Users\\76769\\Desktop\\demo\\html\\javafindjob1.github.io\\x7\\x7-heros.png";
+        String inputFilePath = "D:\\Code\\demo\\html\\javafindjob1.github.io\\mp\\mp-heros.png";
         String outputFilePath = inputFilePath.replace(".png", ".webp");
         // 获取 JPG 图像写入器
         Iterator<ImageWriter> writers = ImageIO.getImageWritersByMIMEType("image/webp");

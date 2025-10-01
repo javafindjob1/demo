@@ -21,51 +21,21 @@ set X9[1]="法术暴击+7%"
  */
 public class HeroAdditionalParse {
 
-  public static Map<String, List<String>> parse(List<Function> functions, Map<String,String> heroNameArrMap) throws Exception {
+  public static Map<String, List<String>> parse(List<Function> functions, Map<String, String> heroNameArrMap)
+      throws Exception {
     Map<String, List<String>> additionalMap = new HashMap<>();
     for (Function function : functions) {
       List<String> rows = function.getRows();
       for (int i = 0; i < rows.size(); i++) {
         String row = rows.get(i);
         // 定位到了英雄皮肤描述的位置
-        if (row.contains("]=\"技能冷却")) {
+        if (row.contains("]=\"技能冷却-4%")) {
           // 天赋1
-          {
-            Pattern effectPattern = Pattern.compile("set \\w+\\[(\\d+)\\]=\"(.*)\"");
-            String flag = row.substring(0, row.indexOf("["));
-            for (int j = i; j < rows.size(); j++) {
-              String tmpRow = rows.get(j);
-              if (tmpRow.startsWith(flag)) {
-                Matcher matcher = effectPattern.matcher(tmpRow);
-                if (matcher.find()) {
-                  String unitNo = matcher.group(1);
-                  String effectStr = matcher.group(2);
-
-                  List<String> additionalList = MapUtil.getNotNull(additionalMap, unitNo, ArrayList::new);
-                  additionalList.add(effectStr);
-                }
-              }
-            }
-          }
-          // 天赋二
-          {
-            row = rows.get(i + 1);
-            Pattern effectPattern = Pattern.compile("set \\w+\\[(\\d+)\\]=\"(.*)\"");
-            String flag = row.substring(0, row.indexOf("["));
-            for (int j = i + 1; j < rows.size(); j++) {
-              String tmpRow = rows.get(j);
-              if (tmpRow.startsWith(flag)) {
-                Matcher matcher = effectPattern.matcher(tmpRow);
-                if (matcher.find()) {
-                  String unitNo = matcher.group(1);
-                  String effectStr = matcher.group(2);
-
-                  List<String> additionalList = MapUtil.getNotNull(additionalMap, unitNo, ArrayList::new);
-                  additionalList.add(effectStr);
-                }
-              }
-            }
-          }
+          parseTifung(rows, i, additionalMap, heroNameArrMap);
+          // 天赋2
+          parseTifung(rows, ++i, additionalMap, heroNameArrMap);
+          // 天赋3
+          parseTifung(rows, ++i, additionalMap, heroNameArrMap);
 
           // 将bb[12]改成E018
           for (Entry<String, String> unitNameEntry : heroNameArrMap.entrySet()) {
@@ -85,5 +55,25 @@ public class HeroAdditionalParse {
     }
 
     return additionalMap;
+  }
+
+  private static void parseTifung(List<String> rows, int i, Map<String, List<String>> additionalMap,
+      Map<String, String> heroNameArrMap) {
+    String row = rows.get(i);
+    Pattern effectPattern = Pattern.compile("set \\w+\\[(\\d+)\\]=\"(.*)\"");
+    String flag = row.substring(0, row.indexOf("["));
+    for (int j = i; j < rows.size(); j++) {
+      String tmpRow = rows.get(j);
+      if (tmpRow.startsWith(flag)) {
+        Matcher matcher = effectPattern.matcher(tmpRow);
+        if (matcher.find()) {
+          String unitNo = matcher.group(1);
+          String effectStr = matcher.group(2);
+
+          List<String> additionalList = MapUtil.getNotNull(additionalMap, unitNo, ArrayList::new);
+          additionalList.add(effectStr);
+        }
+      }
+    }
   }
 }

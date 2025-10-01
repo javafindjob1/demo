@@ -1,4 +1,4 @@
-package com.mp.function.hero;
+package com.abd.function.hero;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.mp.AbilityDetail;
-import com.mp.ItemDetail;
-import com.mp.UnitDetail;
+import com.abd.AbilityDetail;
+import com.abd.ItemDetail;
+import com.abd.UnitDetail;
 
 import lombok.Data;
 

@@ -19,14 +19,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class UnitSheet extends AbstractSheet {
-    
+
     private XSSFCreationHelper creationHelper;
-    private Map<String,ItemDetail> idItemMap;
+    private Map<String, ItemDetail> idItemMap;
 
-
-    public UnitSheet(XSSFWorkbook workbook, Map<String,ItemDetail> idItemMap) {
+    public UnitSheet(XSSFWorkbook workbook, Map<String, ItemDetail> idItemMap) {
         this.workbook = workbook;
-        this.creationHelper = workbook.getCreationHelper();;
+        this.creationHelper = workbook.getCreationHelper();
+        ;
         this.idItemMap = idItemMap;
     }
 
@@ -72,7 +72,7 @@ public class UnitSheet extends AbstractSheet {
             }
 
         }
-        
+
         {
             // 创建一个新的行
             Row row = sheet.createRow(4);
@@ -84,7 +84,7 @@ public class UnitSheet extends AbstractSheet {
                     "【腾讯文档】西7装备介绍_目录");
             cell.setCellValue(richText);
         }
-        
+
         {
             // 创建一个新的行
             Row row = sheet.createRow(5);
@@ -112,7 +112,7 @@ public class UnitSheet extends AbstractSheet {
             // 设置单元格值为超链接
             XSSFRichTextString richText = new XSSFRichTextString();
             appendRichText(workbook, richText, (short) 14, "#FF0000",
-                    "近期（与" + SqLiteJDBC.getBaseVersion()+"比较）更新记录（具体内容在下方标签页查看）：");
+                    "近期（与" + SqLiteJDBC.getBaseVersion() + "比较）更新记录（具体内容在下方标签页查看）：");
             cell.setCellValue(richText);
             try (SqLiteJDBC db = new SqLiteJDBC()) {
                 // 连接SQLite数据库，数据库文件是test.db，如果文件不存在，会自动创建
@@ -127,22 +127,22 @@ public class UnitSheet extends AbstractSheet {
                 List<ItemDetail> newList = new ArrayList<>();
                 // 神秘商店不在出售
                 List<ItemDetail> delList = new ArrayList<>();
-                while(iterator.hasNext()){
+                while (iterator.hasNext()) {
                     ItemDetail next = iterator.next();
-                    if(next.getShop2().indexOf("√")>=0){
+                    if (next.getShop2().indexOf("√") >= 0) {
                         // 之前版本出售
-                        if(next.getShop().indexOf("√")>=0){
+                        if (next.getShop().indexOf("√") >= 0) {
                             // 当前版本也出售
-                        }else{
+                        } else {
                             // 当前版本不出售
                             delList.add(next);
                         }
-                    }else{
+                    } else {
                         // 之前版本不出售
-                        if(next.getShop().indexOf("√")>=0){
+                        if (next.getShop().indexOf("√") >= 0) {
                             // 当前版本出售
                             newList.add(next);
-                        }else{
+                        } else {
                             // 当前版本不出售
                         }
                     }
@@ -156,19 +156,33 @@ public class UnitSheet extends AbstractSheet {
     }
 
     private void updateInfo(XSSFSheet sheet, AtomicInteger dataI, String message, List<ItemDetail> list) {
+        String itemType = null;
         for (ItemDetail item : list) {
+
+            if (!item.getType().equals(itemType)) {
+                itemType = item.getType();
+                Row row = sheet.createRow(dataI.incrementAndGet());
+                Cell cell = row.createCell(1);
+                XSSFRichTextString richText = new XSSFRichTextString();
+                appendRichText(workbook, richText, (short) 12, "#b65656",
+                        itemType);
+
+                cell.setCellValue(richText);
+            }
             // 新增S+武器(龙翼)
             Row row = sheet.createRow(dataI.incrementAndGet());
             // 创建一个新的单元格
             Cell cell = row.createCell(1);
+
             // 设置单元格值为超链接
             Hyperlink link = creationHelper.createHyperlink(HyperlinkType.DOCUMENT);
-            link.setAddress("'"+item.getType() + "'!B" + idItemMap.get(item.getId()).getRowNum());
+            link.setAddress("'" + item.getType() + "'!B" + idItemMap.get(item.getId()).getRowNum());
             cell.setHyperlink(link);
-    
+
             XSSFRichTextString richText = new XSSFRichTextString();
             StringBuffer buf = new StringBuffer();
-            buf.append(message).append("[").append(item.getLevel()).append(item.getType()).append("]").append(item.getName());
+            buf.append(message).append("[").append(item.getLevel()).append(" ").append(item.getType()).append("]")
+                    .append(item.getName());
             if (item.getHero().length() > 0) {
                 buf.append("(").append(item.getHero()).append(")");
             }
@@ -291,7 +305,7 @@ public class UnitSheet extends AbstractSheet {
                 final int LAST_COL = 13;
                 Row row = sheet.createRow(dataI);
                 row.setHeight((short) 800);
-                sheet.addMergedRegion(new CellRangeAddress(dataI, dataI, 2, LAST_COL-1)); // 行从0开始，列从0开始
+                sheet.addMergedRegion(new CellRangeAddress(dataI, dataI, 2, LAST_COL - 1)); // 行从0开始，列从0开始
 
                 insertDescription(row, 0, cellStyle, workbook, "|cffC0D9D9" + "");
                 insertDescription(row, 1, cellStyle, workbook, "|cffC0D9D9" + "");
@@ -344,8 +358,8 @@ public class UnitSheet extends AbstractSheet {
                             buf.append("、");
                         });
                         // 删除末尾的顿号
-                        if(buf.length()>0){
-                            buf.setLength(buf.length()-1);
+                        if (buf.length() > 0) {
+                            buf.setLength(buf.length() - 1);
                         }
                     }
 

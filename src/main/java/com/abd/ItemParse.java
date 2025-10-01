@@ -1,4 +1,4 @@
-package com.mp;
+package com.abd;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -19,7 +19,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import com.mp.FunctionDetail.ItemAccessories;
+import com.abd.FunctionDetail.ItemAccessories;
 
 import lombok.Data;
 

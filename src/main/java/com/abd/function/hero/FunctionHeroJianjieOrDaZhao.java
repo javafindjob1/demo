@@ -1,4 +1,4 @@
-package com.mp.function.hero;
+package com.abd.function.hero;
 
 
 import static org.junit.Assert.assertTrue;
@@ -10,8 +10,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.mp.Function;
-import com.mp.MapUtil;
+import com.abd.Function;
+import com.abd.MapUtil;
 
 /**
  * 英雄简介(也包含一些大招)

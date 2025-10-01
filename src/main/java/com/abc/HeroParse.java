@@ -28,11 +28,13 @@ public class HeroParse {
   public static void main(String[] args) throws Exception {
     System.out.println(11234);
     String assetPath = "D:\\war5-jass\\jass_plugin\\w3x2lni_zhCN_v2.5.2\\w3x2lni_zhCN_v2.5.2\\";
-    assetPath += "0x7\\13EAFB2AFF422D4A26AE941286A3ECF0\\";
+    assetPath += "0x7\\125A6F83569B3CBF1944579694EF2F6E\\";
     ExcelImageInsert.set(assetPath);
 
+    // List<Function> funList = new FunctionRead()
+    //     .read(URLDecoder.decode(FunctionParse.class.getResource("custom/war3map.j还原256.j").getPath(), "utf8"));
     List<Function> funList = new FunctionRead()
-        .read(URLDecoder.decode(FunctionParse.class.getResource("custom/war3map.j还原256.j").getPath(), "utf8"));
+        .read(assetPath + "map/war3map.j还原256.j");
 
     List<Item> list = new IniRead().read("template/Custom/item.ini", assetPath + "table/item.ini", Item.class);
     ItemParse itemParse = new ItemParse();
@@ -52,30 +54,32 @@ public class HeroParse {
     List<Ability> abilityList = new IniRead().read("template/Custom/ability.ini",assetPath + "table/ability.ini", Ability.class);
     Map<String, AbilityDetail> abilityMap = AbilityParse.parse(abilityList);
 
-    Map<String, UnitDetail> heroMap = unitParse.getHero();
-    UnitDetail d = heroMap.get("O01C");
+    Map<String, UnitDetail> unitMap = unitParse.getHero();
+    UnitDetail d = unitMap.get("O01C");
     System.out.println(d);
-    Map<String, Hero> map = new HeroIntroParse().parse(funList, heroMap, abilityMap, idItemMap);
-    System.out.println(map.get("O01C"));
+    Map<String, Hero> heroMap = new HeroIntroParse().parse(funList, unitMap, abilityMap, idItemMap);
+    System.out.println(heroMap.get("O01C"));
     // System.out.println(JSON.toJSONString(map, SerializerFeature.PrettyFormat));
-    System.out.println(JSON.toJSONString(map.get("H01E"), SerializerFeature.PrettyFormat));
+    System.out.println(JSON.toJSONString(heroMap.get("H01E"), SerializerFeature.PrettyFormat));
 
     try (BufferedWriter br = new BufferedWriter(new OutputStreamWriter(
-        new FileOutputStream("C:\\Users\\76769\\Desktop\\demo\\html\\javafindjob1.github.io\\x7\\x7-data.js"),
+        new FileOutputStream("html\\javafindjob1.github.io\\x7\\x7-data.js"),
         "utf-8"))) {
-      // br.write("var x7data = " + JSON.toJSONString(map,
-      // SerializerFeature.PrettyFormat));
-      br.write("var x7data = " + JSON.toJSONString(map));
+      // br.write("var x7data = " + JSON.toJSONString(heroMap, SerializerFeature.PrettyFormat));
+      br.write("var x7data = " + JSON.toJSONString(heroMap));
     }
 
     List<UnitDetail> u = new ArrayList<>();
-    for(String unitId :  map.keySet()){
+    for(String unitId :  heroMap.keySet()){
       UnitDetail detail = idUnitMap.get(unitId);
       u.add(detail);
     }
-    MdxRead.copyMdx(u);
+
+    String pathPre = "html\\javafindjob1.github.io\\x7\\x7-mdx\\";
+    MdxRead.copyMdx(u, assetPath+"resource\\", pathPre);
 
     if(true)return;
+    
     // 合并图片
     // heroArr : [
     // [""],
@@ -105,9 +109,9 @@ public class HeroParse {
         { "H00X", "H00F", "H003", "H00D", "E006", "O005", "H002", "O001", "O000" },
         { "U000", "E003", "E00Y", "O003", "H001", "O002", "N006", "H005", "H00E" },
         { "U001", "H000", "O00J", "H006", "E021", "H00G", "E00T", "E00C", "E029" },
-        { "O01C", "O010", "H01H", "", "E03O", "O018"}
+        { "H01M", "O01C", "O010", "H01H", "O01H", "E03O", "O018", "N02R"}
     };
-    Hero hero = map.get("H01E");
+    Hero hero = heroMap.get("H01M");
     String[][] iconPaths = hero.parseIconPath();
     String basePath = "html\\javafindjob1.github.io\\x7\\x7-imgs\\";
     ImageMerger.merge(iconPaths, "out.webp", 64, 64, basePath);
@@ -121,7 +125,7 @@ public class HeroParse {
         if (unitId == null || unitId.isEmpty()) {
           img = null;
         } else {
-          hero = map.get(unitId);
+          hero = heroMap.get(unitId);
           if(hero==null){
             System.out.println(unitId);
           }
@@ -131,8 +135,8 @@ public class HeroParse {
 
           BufferedImage imgp1 = null;
           if (hero.getP1() != null) {
-            hero = map.get(hero.getP1().getUnitId());
-            imgp1 = ImageMerger.mergeImages(ImageMerger.readPath(hero.parseIconPath(), basePath), 64, 64);
+            Hero heroP1 = heroMap.get(hero.getP1().getUnitId());
+            imgp1 = ImageMerger.mergeImages(ImageMerger.readPath(heroP1.parseIconPath(), basePath), 64, 64);
 
             BufferedImage imgp1h = ImageMerger.readFile(fileFullPathMap.get((i * 3 + 2) + "" + (j + 1)));
             imgp1 = ImageMerger.mergeImages(new BufferedImage[][] { { imgp1h, imgp1 } }, 145, 210 - 6);
@@ -140,11 +144,14 @@ public class HeroParse {
           BufferedImage imgp2 = null;
           if (hero.getP2() != null) {
             String unitId2 = hero.getP2().getUnitId();
-            hero = map.get(unitId2);
-            if(hero==null){
-              System.out.println(unitId2);
+            Hero heroP2 = heroMap.get(unitId2);
+            if(heroP2==null){
+              System.out.println("heroId:" + unitId+ " p2id"+unitId2);
             }
-            imgp2 = ImageMerger.mergeImages(ImageMerger.readPath(hero.parseIconPath(), basePath), 64, 64);
+            if(heroP2.parseIconPath()==null){
+              System.out.println(heroP2.parseIconPath());
+            }
+            imgp2 = ImageMerger.mergeImages(ImageMerger.readPath(heroP2.parseIconPath(), basePath), 64, 64);
 
             BufferedImage imgp2h = ImageMerger.readFile(fileFullPathMap.get((i * 3 + 3) + "" + (j + 1)));
             imgp2 = ImageMerger.mergeImages(new BufferedImage[][] { { imgp2h, imgp2 } }, 145, 210 - 6);

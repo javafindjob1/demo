@@ -1,4 +1,4 @@
-package com.mp.function;
+package com.abd.function;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -8,10 +8,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.mp.Function;
-import com.mp.FunctionDetail;
-import com.mp.MapUtil;
-import com.mp.FunctionDetail.DropInfo;
+import com.abd.Function;
+import com.abd.FunctionDetail;
+import com.abd.MapUtil;
+import com.abd.FunctionDetail.DropInfo;
 
 public class FunctionUnitDrop {
   Map<String, List<DropInfo>> itemPoolMap;

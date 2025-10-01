@@ -170,14 +170,14 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
                 DefaultCookie cookie = new DefaultCookie("auth_token", token);
                 cookie.setHttpOnly(true);
                 cookie.setSecure(true);
-                cookie.setSameSite(CookieHeaderNames.SameSite.None);
+                cookie.setSameSite(CookieHeaderNames.SameSite.Strict);
                 cookie.setPath("/");
                 cookie.setMaxAge(expire); // 1 hour
 
                 DefaultCookie cookieName = new DefaultCookie("username", URLEncoder.encode(username, "utf-8"));
                 cookieName.setHttpOnly(true);
                 cookieName.setSecure(true);
-                cookieName.setSameSite(CookieHeaderNames.SameSite.None);
+                cookieName.setSameSite(CookieHeaderNames.SameSite.Strict);
                 cookieName.setPath("/");
                 cookieName.setMaxAge(expire); // 1 hour
 

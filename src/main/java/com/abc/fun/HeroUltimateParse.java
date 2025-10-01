@@ -21,7 +21,8 @@ call DisplayTimedTextToPlayer(GetOwningPlayer(GetTriggerUnit()),0,0,5.,"圣十�
 
  */
 public class HeroUltimateParse {
-  public static Map<String, List<String>> parse(List<Function> functions, Map<String, String> heroNameArrMap) throws Exception {
+  public static Map<String, List<String>> parse(List<Function> functions, Map<String, String> heroNameArrMap)
+      throws Exception {
     Map<String, List<String>> ultimateMap = new HashMap<>();
     Pattern unitIdPattern = Pattern.compile("GetTriggerUnit\\(\\)==(\\w+\\[\\d+\\])");
     Pattern ultimatePattern = Pattern.compile("call UnitAddAbility\\(GetTriggerUnit\\(\\),'(\\w+)'\\)");
@@ -30,9 +31,14 @@ public class HeroUltimateParse {
       for (int i = 0; i < rows.size(); i++) {
         String row = rows.get(i);
         if (row.contains("领悟了终极")) {
+          if(row.contains("银河皇帝"))System.out.println(row);
           String ultimateStr = rows.get(i - 1);
+          int j = 2;
+          while(!ultimateStr.contains("UnitAddAbility")){
+            ultimateStr = rows.get(i - j++);
+          }
           Matcher matcher = ultimatePattern.matcher(ultimateStr);
-          if (matcher.find()) {
+          if(matcher.find()) {
             String ultimate = matcher.group(1);
 
             int startIndex = i;
@@ -53,7 +59,9 @@ public class HeroUltimateParse {
       }
     }
 
-      // 将bb[12]改成E018
+    // 将bb[12]改成E018
+    System.out.println(heroNameArrMap.get("fQ[35]"));
+    System.out.println(ultimateMap.get("fQ[35]"));
     for (Entry<String, String> unitNameEntry : heroNameArrMap.entrySet()) {
       String key = unitNameEntry.getKey();
       String value = unitNameEntry.getValue();
@@ -63,6 +71,8 @@ public class HeroUltimateParse {
         ultimateMap.put(value, ultimates);
       }
     }
+    System.out.println(ultimateMap.get("N02R"));
+
     return ultimateMap;
   }
 }

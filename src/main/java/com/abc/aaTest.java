@@ -128,14 +128,14 @@ public class aaTest {
     try (BufferedReader br = new BufferedReader(
         new InputStreamReader(aaTest.class.getResourceAsStream("custom/test"), "utf-8"))) {
       String line = null;
-      Pattern pat = Pattern.compile("^\\w{4}\\s");
+      Pattern pat = Pattern.compile("^(\\w{4})(\\s)");
       String preLine = "";
       while ((line = br.readLine()) != null) {
         Matcher matcher = pat.matcher(line);
         if (matcher.find()) {
           // 新行
           list.add(preLine);
-          preLine = line;
+          preLine = matcher.replaceFirst("$1 = ");
         } else {
           preLine += "|n" + line;
         }
@@ -147,7 +147,7 @@ public class aaTest {
     }
     try (BufferedWriter bw = new BufferedWriter(
         new OutputStreamWriter(
-            new FileOutputStream("C:\\Users\\76769\\Desktop\\demo\\demo\\src\\main\\java\\com\\abc\\custom\\testout"),
+            new FileOutputStream("D:\\Code\\demo\\demo\\src\\main\\java\\com\\abc\\custom\\testout"),
             "utf-8"))) {
       for (String s : list) {
         bw.write(s);

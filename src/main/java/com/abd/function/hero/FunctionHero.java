@@ -1,10 +1,10 @@
-package com.mp.function.hero;
+package com.abd.function.hero;
 
 import java.util.List;
 import java.util.Map;
 
-import com.mp.Function;
-import com.mp.FunctionDetail;
+import com.abd.Function;
+import com.abd.FunctionDetail;
 
 /**
  * 英雄解析

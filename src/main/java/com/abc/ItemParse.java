@@ -491,8 +491,14 @@ public class ItemParse {
 
       switch(k){
         case "ssan":
-          v.setType("鞋子");
-          break;
+        case "I036":
+        case "I04O":
+        case "I04P":
+        case "I0A4":
+        v.setType("鞋子");
+        break;
+        case "I07Q":
+        v.setType("饰品");
         default:
           break;
       }

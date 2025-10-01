@@ -1,4 +1,4 @@
-package com.mp.function.hero;
+package com.abd.function.hero;
 
 import static org.junit.Assert.assertTrue;
 
@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import com.mp.Function;
+import com.abd.Function;
 
 /**
  * 

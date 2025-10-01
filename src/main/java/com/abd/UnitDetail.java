@@ -1,4 +1,4 @@
-package com.mp;
+package com.abd;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

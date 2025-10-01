@@ -42,7 +42,8 @@ public class ItemSheet extends AbstractSheet {
                             db.insertData(item);
                         } catch (SQLException e) {
                             // 主键冲突
-                            System.out.println("主键冲突");
+                            System.out.println("插入主键冲突: "+item.getId());
+
                         }
                     }
                 }

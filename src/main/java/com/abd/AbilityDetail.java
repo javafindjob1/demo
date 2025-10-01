@@ -1,4 +1,4 @@
-package com.mp;
+package com.abd;
 
 import lombok.Data;
 

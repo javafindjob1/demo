@@ -1,7 +1,7 @@
-package com.mp;
+package com.abd;
 
-import com.mp.function.HeroData;
-import com.mp.sqlite.SqLiteJDBC;
+import com.abd.function.HeroData;
+import com.abd.sqlite.SqLiteJDBC;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.util.ImageMerger;

@@ -1,4 +1,4 @@
-package com.mp.function;
+package com.abd.function;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.mp.Function;
-import com.mp.FunctionDetail;
-import com.mp.FunctionDetail.ItemAccessories;
+import com.abd.Function;
+import com.abd.FunctionDetail;
+import com.abd.FunctionDetail.ItemAccessories;
 
 public class FunctionNewItemFormula {
 

@@ -173,7 +173,9 @@ public class UnitParse {
       return Integer.parseInt(o1.getHp()) - Integer.parseInt(o2.getHp());
     });
     unitCanDropList.remove(idUnitMap.get("U008"));
+    unitCanDropList.remove(idUnitMap.get("H01L"));
     unitCanDropList.add(idUnitMap.get("U008"));
+    unitCanDropList.add(idUnitMap.get("H01L"));
     Map<String, List<UnitDetail>> map = new LinkedHashMap<>();
     map.put("按照血量排序", unitCanDropList);
     return map;

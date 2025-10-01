@@ -1,4 +1,4 @@
-package com.mp;
+package com.abd;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mp;
+package com.abd;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;

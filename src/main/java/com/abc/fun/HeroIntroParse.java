@@ -174,63 +174,60 @@ public class HeroIntroParse {
       }
     }
 
-    // 皮1皮2补录 巨神兵没有通过名字匹配到，那么就根据art去找
+    // 皮1皮2补录 巨神兵没有通过名字匹配到，那么就根据art去找，仍然没有找到，再使用基本皮肤
     for (Entry<String, String[]> entry : baseHeroSet.entrySet()) {
       String id = entry.getKey();
-      String[] value = entry.getValue();
+      String[] list = entry.getValue();
       UnitDetail unitDetail = heroMap.get(id);
       String heroName = unitDetail.getName();
-      if (value[1] == null) {
+      if (list[1] == null) {
         AbilityDetail pifu1 = pifu1AbilityMap.get(heroName);
         if (pifu1 != null) {
 
           UnitDetail uu = artHeroMap.get(pifu1.getArt().toLowerCase());
           if (uu != null) {
-            value[1] = uu.getId();
+            list[1] = uu.getId();
+          }else{
+            list[1] = list[0];
           }
         }
       }
 
-      if (value[2] == null) {
+      if (list[2] == null) {
         AbilityDetail pifu2 = pifu2AbilityMap.get(heroName);
         if (pifu2 != null) {
 
           UnitDetail uu = artHeroMap.get(pifu2.getArt().toLowerCase());
           if (uu != null) {
-            value[2] = uu.getId();
+            list[2] = uu.getId();
+          }else{
+            list[2] = list[0];
           }
         }
       }
-      System.out.println(heroMap.get(id).getName() + ":" + id + "," + value[0] + "," + value[1] + "," + value[2]);
+      System.out.println(heroMap.get(id).getName() + ":" + id + "," + list[0] + "," + list[1] + "," + list[2]);
     }
 
     // 皮1 皮2 建立对这个皮肤集的映射关系
     Map<String, String[]> tmpMap = new HashMap<>();
     for (Entry<String, String[]> entry : baseHeroSet.entrySet()) {
-      String[] next = entry.getValue();
-      if (next[1] != null) {
-        tmpMap.put(next[1], next);
+      String[] list = entry.getValue();
+      if (list[1] != null) {
+        tmpMap.put(list[1], list);
       }
-      if (next[2] != null) {
-        tmpMap.put(next[2], next);
+      if (list[2] != null) {
+        tmpMap.put(list[2], list);
       }
     }
     baseHeroSet.putAll(tmpMap);
-    // 补充幸运女神
-    String[] strings = baseHeroSet.get("H01H");
-    baseHeroSet.put("H02H",strings);
-    strings[2] = "H02H";
-    System.out.println(strings[0]);
-    System.out.println(strings[1]);
-    System.out.println(strings[2]);
-    System.out.println(idItemMap.get("H01E"));
-
     Map<String, String[]> juanzhouItemMap = HeroItemParse.parse(functions, heroNameArrMap, idItemMap);
 
     Map<String, Hero> heroResultMap = new HashMap<>();
 
-    System.out.println(heroMap.get("H01H"));
-    System.out.println(heroMap.get("H02H"));
+    System.out.println(heroMap.get("E03O"));
+    System.out.println(heroMap.get("E04L"));
+    System.out.println(baseHeroSet.get("E03O"));
+    System.out.println(baseHeroSet.get("E04L"));
     for (Entry<String, UnitDetail> entry : heroMap.entrySet()) {
       String uid = entry.getKey();
       UnitDetail unitDetail = entry.getValue();
@@ -298,6 +295,8 @@ public class HeroIntroParse {
       sb.append("|cffffcc00天赋1：|r").append(additional.get(0));
       sb.append("|n");
       sb.append("|cffffcc00天赋2：|r").append(additional.get(1));
+      sb.append("|n");
+      sb.append("|cffffcc00天赋3：|r").append(additional.get(2));
       d.setDesc(sb.toString());
       hero.setD(d);
 
@@ -319,6 +318,7 @@ public class HeroIntroParse {
         t.setIcon(ultimateAbi.getArt());
         appendPifuAbi(pifuMapArr, uid, values, baseHeroId, ultimateAbi.getUbertip(), t, "5");
       } else {
+        if(ultimateList==null)System.out.println(baseHeroId);
         String ultimate = ultimateList.get(0);
         AbilityDetail ultimateAbi = abilityMap.get(ultimate);
         t.setName(ultimateAbi.getName());
@@ -363,9 +363,14 @@ public class HeroIntroParse {
             hero.getItems().add(viewData);
           }
         }
-        if ((uid.equals(values[1]) || uid.equals(values[2]))
+
+        
+        if ((uid.equals(values[1]) || uid.equals(values[2]))  
+            || baseHeroId.equals("O01C") || baseHeroId.equals("H01H")
             || baseHeroId.equals("E03O") || baseHeroId.equals("O010") || baseHeroId.equals("O018")
-            || baseHeroId.equals("E006") || baseHeroId.equals("E00Y") || baseHeroId.equals("H006")) {
+            || baseHeroId.equals("E006") || baseHeroId.equals("E00Y") || baseHeroId.equals("H006")
+            || baseHeroId.equals("H01M") || baseHeroId.equals("O01H") || baseHeroId.equals("N02R")
+            ) {
           String itemId = items[2];
           if (itemId != null) {
             ItemDetail item = idItemMap.get(itemId);
