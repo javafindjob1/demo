@@ -1,4 +1,4 @@
-package com.xi42.function;
+package com.dj.function;
 
 import java.io.File;
 import java.io.Serializable;
@@ -6,11 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.xi42.Client;
-import com.xi42.parse.AbilityDetail;
-import com.xi42.parse.ExcelImageInsert;
-import com.xi42.parse.ItemDetail;
-import com.xi42.parse.UnitDetail;
+import com.dj.Client;
+import com.dj.parse.AbilityDetail;
+import com.dj.parse.ExcelImageInsert;
+import com.dj.parse.ItemDetail;
+import com.dj.parse.UnitDetail;
 
 import lombok.Data;
 

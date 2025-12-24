@@ -1,4 +1,4 @@
-package com.xi42.parse;
+package com.dj.parse;
 
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import com.xi42.Client;
+import com.dj.Client;
 
 import com.common.ini.IniRead;
 import com.common.ini.Unit;

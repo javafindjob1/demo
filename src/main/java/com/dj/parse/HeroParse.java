@@ -1,4 +1,4 @@
-package com.xi42.parse;
+package com.dj.parse;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -8,10 +8,10 @@ import com.common.parse.AbstractParse;
 import com.common.parse.Function;
 import com.common.util.MapUtil;
 import com.common.util.ObjectUtil;
-import com.xi42.function.Hero;
-import com.xi42.function.HeroData;
-import com.xi42.function.HeroData.ViewData;
-import com.xi42.parse.UnitDetail.Primary;
+import com.dj.function.Hero;
+import com.dj.function.HeroData;
+import com.dj.function.HeroData.ViewData;
+import com.dj.parse.UnitDetail.Primary;
 
 import lombok.Data;
 
@@ -34,7 +34,7 @@ public class HeroParse extends AbstractParse {
     for (UnitDetail unit : unitMap.values()) {
       String heroAbStrings = unit.getHeroAbilList();
       String[] heroAbArr = heroAbStrings.split(",");
-      if (heroAbArr.length == 4) {
+      if (heroAbArr.length == 3) {
         unitHeroMap.put(unit.getId(), unit);
       }
     }

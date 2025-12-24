@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(of = "id", callSuper = false) // 添加此注解以明确指示不调用超类方法
+@EqualsAndHashCode(of = "id", callSuper = true) // 添加此注解以明确指示不调用超类方法
 public class Ability extends Ini {
   /** id */
   private String id;

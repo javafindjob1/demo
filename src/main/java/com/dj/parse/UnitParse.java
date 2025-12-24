@@ -1,4 +1,4 @@
-package com.xi42.parse;
+package com.dj.parse;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -28,7 +28,7 @@ import com.common.ini.UnitGroup;
 import com.common.parse.AbstractParse;
 import com.common.parse.DropInfo;
 import com.common.util.MapUtil;
-import com.xi42.Client;
+import com.dj.Client;
 
 import lombok.Data;
 

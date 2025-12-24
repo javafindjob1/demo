@@ -50,6 +50,10 @@ public class Hero {
   /** 魔核技能补充 */
   private AbilityDetail core;
 
+  /** 超链接跳转用到的字段 */
+  private int rowNum;
+  private String sheetName;
+
   /** 专属物品补充 */
   private List<ItemDetail> itemList = new ArrayList<>();
 

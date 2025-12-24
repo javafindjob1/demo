@@ -1,4 +1,4 @@
-package com.xi42.parse;
+package com.dj.parse;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -25,8 +25,8 @@ import com.common.parse.AbstractParse;
 import com.common.parse.DropInfo;
 import com.common.parse.ItemAccessories;
 import com.common.util.MapUtil;
-import com.xi42.Client;
-import com.xi42.parse.ItemDetail.UnitDrop;
+import com.dj.Client;
+import com.dj.parse.ItemDetail.UnitDrop;
 
 import lombok.Data;
 
@@ -39,59 +39,111 @@ public class ItemParse extends AbstractParse {
   private static int getValue(String level) {
     int value = 0;
     switch (level) {
-      case "G":
+      case "劣质":
         value = 10;
         break;
-      case "G+":
+      case "良好":
         value = 11;
         break;
-      case "F":
-        value = 20;
+      case "普通":
+        value = 12;
         break;
-      case "F+":
-        value = 21;
+      case "优越":
+        value = 13;
         break;
-      case "E":
+      case "稀有":
+        value = 14;
+        break;
+      case "究极":
+        value = 15;
+        break;
+      case "礼物":
         value = 30;
         break;
-      case "E+":
-        value = 31;
-        break;
-      case "D":
+      case "传说":
         value = 40;
         break;
-      case "D+":
-        value = 41;
-        break;
-      case "C":
+      case "灵魂":
+      case "人造灵魂":
+      case "灵魂(Earl's)":
+      case "灵魂(Earl's level)":
+      case "灵魂(God's level)":
+      case "灵魂(King's level)":
+      case "灵魂(Demon's level)":
         value = 50;
         break;
-      case "C+":
-        value = 51;
-        break;
-      case "B":
+      case "神具":
         value = 60;
         break;
-      case "B+":
-        value = 61;
-        break;
-      case "A":
-        value = 70;
-        break;
-      case "A+":
+      case "★":
         value = 71;
         break;
-      case "S":
-        value = 80;
+      case "★★":
+        value = 72;
         break;
-      case "S+":
-        value = 81;
+      case "★★★":
+        value = 73;
+        break;
+      case "★★★★":
+        value = 74;
+        break;
+      case "★★★★★":
+        value = 75;
         break;
       default:
-        value = 90;
+        value = 0;
         break;
     }
     return value;
+  }
+
+  private static Pattern colorPattern = Pattern.compile("\\|[cffCFF]{3}\\w{3,6}");
+  private static Pattern singlePattern = Pattern.compile("(?<![\\|\\w])([nr])(?!\\w)");
+  private static Pattern doublePattern = Pattern.compile("\\|\\|");
+
+  public String parseDescription(String id, String description) {
+    {
+      // 将|Cff之类的替换成小写
+      StringBuffer sb = new StringBuffer();
+      Matcher matcher = colorPattern.matcher(description);
+      while (matcher.find()) {
+        String color = matcher.group();
+        matcher.appendReplacement(sb, color.toLowerCase());
+      }
+      matcher.appendTail(sb);
+      description = sb.toString();
+    }
+    {
+      // 补充少的竖杆
+      StringBuffer sb = new StringBuffer();
+      Matcher matcher = singlePattern.matcher(description);
+      while (matcher.find()) {
+        String n = matcher.group(1);
+        matcher.appendReplacement(sb, "|" + n);
+      }
+      matcher.appendTail(sb);
+      description = sb.toString();
+    }
+    description = description.replace("品质;", "品质:");
+    description = description.replace("品质：", "品质:");
+    if (id.equals("I0GJ")) {
+      description = description.replace("灵魂(|r|cffff1493（Demon's Level)", "灵魂(|r|cffff1493Demon's Level)");
+    }else if(id.equals("I0DW")){
+      description = description.replace("能力|n品质:限制的爱(A级)Cd:3)传说", "能力:限制的爱(A级)Cd:3)|n品质:传说");
+    }
+
+    {
+      // 删除多与的竖杆
+      StringBuffer sb = new StringBuffer();
+      Matcher matcher = doublePattern.matcher(description);
+      while (matcher.find()) {
+        String n = matcher.group();
+        matcher.appendReplacement(sb, "|");
+      }
+      matcher.appendTail(sb);
+      description = sb.toString();
+    }
+    return description;
   }
 
   public Map<String, ItemDetail> parse(List<Item> items) {
@@ -108,17 +160,13 @@ public class ItemParse extends AbstractParse {
       itemDetail.setId(e.getId());
 
       /** 描述 */
-      String description = e.getUbertip();
+      String description = parseDescription(e.getId(), e.getUbertip());
       itemDetail.setDescription(description);
 
       /** 物品等级 */
-      String level = splitLevel(itemDetail.getDescription());
+      String level = splitLevel(description);
       itemDetail.setLevel(level);
-      if (level.length() == 0) {
-        itemDetail.setLevelInt(Integer.parseInt(e.getLevel()) * 10);
-      } else {
-        itemDetail.setLevelInt(getValue(level));
-      }
+      itemDetail.setLevelInt(getValue(level) * 10);
 
       /** 物品类型 */
       String type = splitType(itemDetail.getDescription(), e.getOthers().get("class"));
@@ -225,7 +273,7 @@ public class ItemParse extends AbstractParse {
 
   private static String splitType(String description, String clazz) {
 
-    String info = "";
+    String info = "未知";
     if (description.contains("种类：")) {
       info = split("种类：", "|n", description).replaceAll("(\\|n)|(\\|r)", "");
     } else if (description.contains("类型：")) {
@@ -233,44 +281,29 @@ public class ItemParse extends AbstractParse {
     }
 
     switch (clazz) {
-      case "Permanent":
+      case "Artifact":
         info = "武器";
         break;
-      case "Artifact":
-        info = "衣服";
-        break;
-      case "Purchasable":
-        info = "鞋子";
-        break;
-      case "Campaign":
-        info = "饰品";
+      case "Permanent":
+        info = "副武器";
         break;
       case "PowerUp":
-        info = "炼化书";
+        info = "装甲";
+        break;
+      case "Purchasable":
+        info = "头部道具";
+        break;
+      case "Campaign":
+        info = "道具(项链,手套,戒指,鞋子,灵魂)";
         break;
       case "Charged":
-        if (info.equals("灵药")
-            || description.contains("永久增加")
-            || description.contains("英雄等级立即提升1级") // ankh 穿梭之叶
-        ) {
-          info = "灵药";
-        }
+        info = "材料";
         break;
       case "Miscellaneous":
-        if (info.equals("魔石")) {
-          info = "魔石";
-        } else if (info.equals("神像")) {
-          info = "特殊";
-        } else if (info.equals("特殊")
-            || description.contains("羊皮卷")
-            || description.contains("白色石板")
-            || description.contains("灵压感应")
-            || description.contains("失去复活能力") // I03Q 混沌草
-        ) {
-          info = "特殊";
-        }
+        info = "传送";
         break;
       default:
+        info = "未知";
         break;
     }
     return info;
@@ -293,13 +326,13 @@ public class ItemParse extends AbstractParse {
     Map<String, List<ItemDetail>> resultMap = new LinkedHashMap<>();
     switch (type) {
       case "武器":
-      case "衣服":
-      case "鞋子":
-      case "饰品":
-      case "魔石":
+      case "副武器":
+      case "装甲":
+      case "头部道具":
+      case "道具(项链,手套,戒指,鞋子,灵魂)":
       case "材料":
-      case "特殊":
-      case "灵药":
+      case "传送":
+      case "未知":
         // 以支线举例
         Map<String, Map<String, Map<String, Integer>>> markType = getMarkType(Client.class);
         Map<String, Map<String, Integer>> zhixianMap = markType.get(type);
@@ -329,13 +362,13 @@ public class ItemParse extends AbstractParse {
         break;
       default:
         typeMap.remove("武器");
-        typeMap.remove("衣服");
-        typeMap.remove("鞋子");
-        typeMap.remove("饰品");
-        typeMap.remove("魔石");
-        typeMap.remove("灵药");
+        typeMap.remove("副武器");
+        typeMap.remove("装甲");
+        typeMap.remove("头部道具");
+        typeMap.remove("道具(项链,手套,戒指,鞋子,灵魂)");
         typeMap.remove("材料");
-        typeMap.remove("特殊");
+        typeMap.remove("传送");
+        typeMap.remove("未知");
         if (typeMap.size() > 0) {
           resultMap.putAll(typeMap);
         }
@@ -355,7 +388,7 @@ public class ItemParse extends AbstractParse {
   }
 
   private static String splitLevel(String description) {
-    String info = split("等级：", "|n", description).replaceAll("(\\|n)|(\\|r)", "");
+    String info = split("品质:", "|n", description).replaceAll("(\\|n)|(\\|r)", "");
     info = info.replaceAll("\\|cff\\w{6}", "").replaceAll("\\|r", "");
     if (info.startsWith("|cff")) {
       info = info.substring(10);
@@ -388,7 +421,7 @@ public class ItemParse extends AbstractParse {
   public static String splitName(String desc) {
     // Name = "|cffff77ff凤凰羽靴|r"
     // Name = "|cffffff00冰龙头|r|cffccffcc合成卷轴|r"
-    return desc.replaceAll("\\|cff\\w{6}", "").replaceAll("(\\|r)|(\\|n)", "").replace(".", "·");
+    return desc.replaceAll("\\|[cffCFF]{3}\\w{4,6}", "").replaceAll("(\\|r)|(\\|n)", "").replace(".", "·");
   }
 
   @Data

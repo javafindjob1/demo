@@ -20,17 +20,27 @@ public abstract class AbstractSheet {
 
   protected XSSFWorkbook workbook;
 
+  public AbstractSheet() {
+  }
+
+  public AbstractSheet(XSSFWorkbook workbook) {
+    this.workbook = workbook;
+  }
+
   public void writeTo(String fileName) throws FileNotFoundException, IOException {
     // 写入文件
     try (FileOutputStream fileOut = new FileOutputStream(fileName)) {
       workbook.write(fileOut);
     }
   }
-  public void insertDescription(Row row, int column, CellStyle cellStyle, XSSFWorkbook workbook, String description) throws IOException {
-    insertDescription(row, column, cellStyle, workbook,  12, description);
+
+  public void insertDescription(Row row, int column, CellStyle cellStyle, XSSFWorkbook workbook, String description)
+      throws IOException {
+    insertDescription(row, column, cellStyle, workbook, 12, description);
   }
 
-  public void insertDescription(Row row, int column, CellStyle cellStyle, XSSFWorkbook workbook, int fontsize,  String description)
+  public void insertDescription(Row row, int column, CellStyle cellStyle, XSSFWorkbook workbook, int fontsize,
+      String description)
       throws IOException {
     Cell cell = row.createCell(column);
     // row.setHeight((short) 5100);
@@ -42,7 +52,7 @@ public abstract class AbstractSheet {
     for (int i = 0; i < fieldList.size(); i++) {
       String[] arr = fieldList.get(i);
       String hexColorStr = arr[0].replace("|cff", "#");
-      appendRichText(workbook, richText, (short)fontsize, hexColorStr, arr[1]);
+      appendRichText(richText, (short) fontsize, hexColorStr, arr[1]);
     }
 
     // 计算行高
@@ -69,13 +79,22 @@ public abstract class AbstractSheet {
     cell.setCellValue(richText);
   }
 
-  protected void appendRichText(XSSFWorkbook workbook, XSSFRichTextString richText, short fontSize, String hexColorStr,
-      String buf) {
-    appendRichText(workbook, richText, buf, fontSize, hexColorStr, XSSFFont.U_NONE);
+  protected XSSFRichTextString createRichTextString(int fontSize, String hexColorStr, String text) {
+    return createRichTextString(fontSize, hexColorStr, XSSFFont.U_NONE, text);
   }
 
-  protected void appendRichText(XSSFWorkbook workbook, XSSFRichTextString richText, String buf, short fontSize,
-      String hexColorStr, byte underline) {
+  protected XSSFRichTextString createRichTextString(int fontSize, String hexColorStr, byte underline, String text) {
+    XSSFRichTextString richText = new XSSFRichTextString();
+    return appendRichText(richText, fontSize, hexColorStr, underline, text);
+  }
+
+  protected XSSFRichTextString appendRichText(XSSFRichTextString richText, int fontSize,
+      String hexColorStr, String text) {
+    return appendRichText(richText, fontSize, hexColorStr, XSSFFont.U_NONE, text);
+  }
+
+  protected XSSFRichTextString appendRichText(XSSFRichTextString richText, int fontSize,
+      String hexColorStr, byte underline, String text) {
     if (hexColorStr == null) {
       hexColorStr = "#FFFFFF";
     }
@@ -88,64 +107,65 @@ public abstract class AbstractSheet {
     // 设置字体颜色为16进制颜色
     XSSFColor hexColor = new XSSFColor(java.awt.Color.decode(hexColorStr), null);
     font.setColor(hexColor);
-    font.setFontHeightInPoints(fontSize);
-
-    richText.append(buf, font);
+    font.setFontHeightInPoints((short) fontSize);
+    richText.append(text, font);
+    return richText;
   }
 
+ 
+
+  public static List<String[]> parseText(String description) {
+    // String description =
+    // "|cffccffcc锻造材料|r|cffff9900|n|r|cffffcc00天心法袍|n能量宝石|n幻森之羽 x
+    // 10|n|r|cff99ccff|n|n护甲+120|n生命上限+5000|n智力+200|n降低英雄技能6%冷却时间|n被暗属性敌人攻击时，反弹智力x10的伤害|n|r|cff999999东正主教专属：|n智力+175|r|cff99ccff|n|r|cff99cc00等级：B+|n|r|cffff9900类型：衣服|n|n|r索多曼尼斯教堂大主教的华丽礼服，在光辉的外衣下藏着奇异的符文。";
+    List<String[]> list = new ArrayList<>();
+    if (description == null || description.trim().length() == 0) {
+      return list;
+    }
   
-    public static List<String[]> parseText(String description) {
-        // String description =
-        // "|cffccffcc锻造材料|r|cffff9900|n|r|cffffcc00天心法袍|n能量宝石|n幻森之羽 x
-        // 10|n|r|cff99ccff|n|n护甲+120|n生命上限+5000|n智力+200|n降低英雄技能6%冷却时间|n被暗属性敌人攻击时，反弹智力x10的伤害|n|r|cff999999东正主教专属：|n智力+175|r|cff99ccff|n|r|cff99cc00等级：B+|n|r|cffff9900类型：衣服|n|n|r索多曼尼斯教堂大主教的华丽礼服，在光辉的外衣下藏着奇异的符文。";
-        List<String[]> list = new ArrayList<>();
-        if (description == null || description.trim().length() == 0) {
-            return list;
-        }
-
-        {
-            Pattern singleR = Pattern.compile("\\|r(?!\\|c)");
-            Matcher matcher = singleR.matcher(description);
-            while (matcher.find()) {
-                String group = matcher.group();
-                description = description.replace(group, "|cffffffff");
-            }
-
-        }
-
-        String[] lines = description.split("\\|n");
-        String color = "|cffd6d5b7";
-        for (String line : lines) {
-
-            if (!line.startsWith("|cff")) {
-                line = color + line;
-            }
-            if (!line.substring(line.length() - 10).startsWith("|cff")) {
-                line += color;
-            }
-
-            Pattern singleR = Pattern.compile("(\\|cff\\w{6})(.*?)(?=\\|cff\\w{6})");
-            Matcher matcher = singleR.matcher(line);
-
-            while (matcher.find()) {
-                color = matcher.group(1);
-                String text = matcher.group(2);
-                if (text == null || text.trim().length() == 0) {
-                    continue;
-                }
-                list.add(new String[] { color, text });
-            }
-            if (list.size() > 0) {
-                list.get(list.size() - 1)[1] += "\n";
-            }
-        }
-
-        if (list.size() > 0) {
-            String lastLine = list.get(list.size() - 1)[1];
-            list.get(list.size() - 1)[1] = lastLine.substring(0, lastLine.length() - 1);
-        }
-        return list;
+    {
+      Pattern singleR = Pattern.compile("\\|r(?!\\|c)");
+      Matcher matcher = singleR.matcher(description);
+      while (matcher.find()) {
+        String group = matcher.group();
+        description = description.replace(group, "|cffffffff");
+      }
+      // 删除所有|r
+      description = description.replaceAll("\\|[rR]", "");
     }
 
+    String[] lines = description.split("\\|n");
+    String color = "|cffd6d5b7";
+    for (String line : lines) {
+
+      if (!line.startsWith("|cff")) {
+        line = color + line;
+      }
+      if (!line.substring(line.length() - 10).startsWith("|cff")) {
+        line += color;
+      }
+
+      Pattern singleR = Pattern.compile("(\\|cff\\w{6})(.*?)(?=\\|cff\\w{6})");
+      Matcher matcher = singleR.matcher(line);
+
+      while (matcher.find()) {
+        color = matcher.group(1);
+        String text = matcher.group(2);
+        if (text == null || text.trim().length() == 0) {
+          continue;
+        }
+        list.add(new String[] { color, text });
+      }
+      if (list.size() > 0) {
+        list.get(list.size() - 1)[1] += "\n";
+      }
+    }
+
+    if (list.size() > 0) {
+      String lastLine = list.get(list.size() - 1)[1];
+      list.get(list.size() - 1)[1] = lastLine.substring(0, lastLine.length() - 1);
+    }
+    return list;
+  }
 
 }

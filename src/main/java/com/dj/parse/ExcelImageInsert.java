@@ -1,4 +1,4 @@
-package com.xi42.parse;
+package com.dj.parse;
 
 import org.apache.poi.xssf.usermodel.*;
 
@@ -12,12 +12,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Iterator;
+import java.util.*;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriter;
 
 public class ExcelImageInsert {
+    public static Set<String> notfoundList = new HashSet<>();
     private static String assetPath = "";
     // 设置当前的环境类，找到自定义的文件中的资料
     private static Class<?> clazz;
@@ -93,6 +94,7 @@ public class ExcelImageInsert {
                 fileName = imagePath.substring(imagePath.lastIndexOf("\\") + 1);
             }
             if (clazz.getResource("custom/" + fileName) == null) {
+                notfoundList.add(imagePath.toLowerCase());
                 throw new FileNotFoundException("File not found: " + imagePath);
             }
             // /C:/Users/76769/Desktop/demo/demo/target/classes/com/abd/custom/5-zhuangbei-huanzimoyan.blp

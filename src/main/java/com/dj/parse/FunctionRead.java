@@ -1,4 +1,4 @@
-package com.xi42.parse;
+package com.dj.parse;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;

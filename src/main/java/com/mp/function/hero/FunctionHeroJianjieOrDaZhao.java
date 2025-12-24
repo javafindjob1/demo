@@ -26,7 +26,7 @@ public class FunctionHeroJianjieOrDaZhao {
     // call UnitAddAbility(LoadUnitHandle(YDLOC, GetHandleId(GetTriggeringTrigger()) + ydl_localvar_step * 0x80000, 0xC303079D), 'A119')
     Pattern heroPattern = Pattern.compile("if \\( \\( LoadUnitHandle\\(YDLOC, GetHandleId\\(GetTriggeringTrigger\\(\\)\\) \\+ ydl_localvar_step \\* \\w+, \\w+\\) == gg_unit_(\\w+)_\\w+ \\) \\) then");
     Pattern abilityPattern = Pattern.compile("call UnitAddAbility\\(LoadUnitHandle\\(YDLOC, GetHandleId\\(GetTriggeringTrigger\\(\\)\\) \\+ ydl_localvar_step \\* \\w+, \\w+\\), '(\\w+)'\\)");
-
+//A06P
     Map<String, List<String>> heroMap = new HashMap<>();
     String heroName = null;
     for (String row : fun.getRows()) {

@@ -1,4 +1,4 @@
-package com.xi42.parse;
+package com.dj.parse;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

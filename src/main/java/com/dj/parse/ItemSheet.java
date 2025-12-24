@@ -1,11 +1,11 @@
-package com.xi42.parse;
+package com.dj.parse;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.*;
 
 import com.common.parse.AbstractSheet;
-import com.xi42.sqlite.SqLiteJDBC;
+import com.dj.sqlite.SqLiteJDBC;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -53,7 +53,7 @@ public class ItemSheet extends AbstractSheet {
         XSSFSheet sheet = workbook.createSheet(sheetName);
 
         int colIndex = 0;
-        sheet.setColumnWidth(colIndex++, 2 * 256 + 60); // 单位为1/256个字符宽度
+        sheet.setColumnWidth(colIndex++, 2 * 256+1); // 单位为1/256个字符宽度
         sheet.setColumnWidth(colIndex++, 6 * 256); // 单位为1/256个字符宽度
         sheet.setColumnWidth(colIndex++, 60 * 256); // 单位为1/256个字符宽度
         sheet.setColumnWidth(colIndex++, 2 * 256); // 单位为1/256个字符宽度
@@ -64,7 +64,7 @@ public class ItemSheet extends AbstractSheet {
         Row row0 = sheet.createRow(0);
 
         colIndex = 0;
-        row0.createCell(colIndex++).setCellValue("ID");
+        row0.createCell(colIndex++).setCellValue("");
         row0.createCell(colIndex++).setCellValue("名称");
         row0.createCell(colIndex++).setCellValue("属性");
         row0.createCell(colIndex++).setCellValue("");

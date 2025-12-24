@@ -1,4 +1,4 @@
-package com.xi42.sqlite;
+package com.dj.sqlite;
 
 import java.io.Closeable;
 import java.lang.reflect.Field;
@@ -13,11 +13,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.xi42.parse.ItemDetail;
+import com.dj.parse.ItemDetail;
 
 public class SqLiteJDBC implements Closeable {
 
-    private static String DB_URL = "jdbc:sqlite:D:\\SqLite\\version-record-xi4.db";
+    private static String DB_URL = "jdbc:sqlite:D:\\SqLite\\version-record-dj.db";
     /** 当前版本表名 */
     private static String tableName;
     /** 基线版本表名 */

@@ -1,4 +1,4 @@
-package com.xi42.parse;
+package com.dj.parse;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -18,7 +18,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.common.parse.AbstractSheet;
-import com.xi42.function.Hero;
+import com.dj.function.Hero;
 
 public class HeroSheet extends AbstractSheet {
   public HeroSheet(XSSFWorkbook workbook) {
@@ -109,15 +109,27 @@ public class HeroSheet extends AbstractSheet {
           insertDescription(row, 4, cellStyle, workbook, "|cffC0D9D9" + " ");
           insertDescription(row, 5, cellStyle, workbook, "|cffC0D9D9" + " ");
           insertDescription(row, 6, cellStyle, workbook, "|cffC0D9D9" + " ");
-          ExcelImageInsert.drawingBlp(sheet, hero1.getUnit().getArt(), 0, dataI, 2, 1, 1);
+          try{
+            ExcelImageInsert.drawingBlp(sheet, hero1.getUnit().getArt(), 0, dataI, 2, 1, 1);
+          }catch(Exception e){
+
+          }
         } else {
           heroName = hero2.getUnit().getPropernames();
           insertDescription(row, 3, cellStyle, workbook, "|cffC0D9D9" + " ");
           insertDescription(row, 4, cellStyle, workbook, "|cffC0D9D9" + " ");
           insertDescription(row, 5, cellStyle, workbook, heroName);
           insertDescription(row, 6, cellStyle, workbook, "|cffC0D9D9" + " ");
-          ExcelImageInsert.drawingBlp(sheet, hero1.getUnit().getArt(), 0, dataI, 2, 1, 1);
-          ExcelImageInsert.drawingBlp(sheet, hero2.getUnit().getArt(), 4, dataI, 1, 1, 1);
+          try{
+            ExcelImageInsert.drawingBlp(sheet, hero1.getUnit().getArt(), 0, dataI, 2, 1, 1);
+          }catch(Exception e){
+
+          }
+          try{
+            ExcelImageInsert.drawingBlp(sheet, hero2.getUnit().getArt(), 4, dataI, 1, 1, 1);
+          }catch(Exception e){
+            
+          }
         }
       }
 
