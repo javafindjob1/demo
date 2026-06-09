@@ -45,11 +45,17 @@ public class ItemParse extends AbstractParse {
       case "G+":
         value = 11;
         break;
+      case "F-":
+        value = 19;
+        break;
       case "F":
         value = 20;
         break;
       case "F+":
         value = 21;
+        break;
+      case "E-":
+        value = 29;
         break;
       case "E":
         value = 30;
