@@ -71,6 +71,7 @@ public class Ability extends Ini {
   private String Tip; // "震荡波(|cffffcc00W|r)"
   /** 提示工具 - 普通 - 扩展 有可能是json格式字符串 */
   private String Ubertip; // "一道强劲的震荡波能对一直线上的敌人造成<ACsh,DataA1>点的伤害。"
+  private String Unubertip;
   /** 按钮位置 - 关闭 (X) */
   private String UnButtonpos_1; // 0
   /** 按钮位置 - 关闭 (Y) */

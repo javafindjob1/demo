@@ -3,6 +3,7 @@ package com.mp.parse;
 import org.apache.poi.xssf.usermodel.*;
 
 import com.common.blizzard.BlpFile;
+import com.common.blizzard.TgaFile;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -31,13 +32,14 @@ public class ExcelImageInsert {
         String inputFilePath = "D:\\Code\\demo\\html\\javafindjob1.github.io\\mp\\mp-heros.png";
         String outputFilePath = inputFilePath.replace(".png", ".webp");
         // 获取 JPG 图像写入器
-        Iterator<ImageWriter> writers = ImageIO.getImageWritersByMIMEType("image/webp");
-        if (!writers.hasNext()) {
-            System.out.println("没有可用的 JPG 图像写入器");
-            return;
-        }
-        ImageWriter writer = writers.next();
-        System.out.println(writer);
+        // Iterator<ImageWriter> writers =
+        // ImageIO.getImageWritersByMIMEType("image/webp");
+        // if (!writers.hasNext()) {
+        // System.out.println("没有可用的 JPG 图像写入器");
+        // return;
+        // }
+        // ImageWriter writer = writers.next();
+        // System.out.println(writer);
         BufferedImage img = ImageIO.read(new File(inputFilePath));
         ImageIO.write(img, "webp", new File(outputFilePath));
     }
@@ -45,7 +47,8 @@ public class ExcelImageInsert {
     public static void main(String[] args) {
         try {
             herosChange();
-            if(true)return;
+            if (true)
+                return;
             System.out.println("1234");
             // 创建一个新的 XSSFWorkbook
             XSSFWorkbook workbook = new XSSFWorkbook();
@@ -133,13 +136,18 @@ public class ExcelImageInsert {
      * @return
      * @throws IOException
      */
-    public static void convertImageToPng(String blpPath, File outFile) throws IOException {
-        String fullPath = combineFullPath(blpPath);
+    public static void convertImageToWebp(String iconPath, File outFile) throws IOException {
+        String fullPath = combineFullPath(iconPath);
 
         createPath(outFile.getParentFile());
 
-        File blpFile = new File(fullPath);
-        BufferedImage img = BlpFile.read(blpFile);
+        File iconFile = new File(fullPath);
+         BufferedImage img;
+        if (iconPath.endsWith(".tga")) {
+            img = TgaFile.read(iconFile);
+        }else{
+            img = BlpFile.read(iconFile);
+        }
 
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             ImageIO.write(img, "png", baos);
@@ -151,8 +159,24 @@ public class ExcelImageInsert {
         }
     }
 
+    public static void convertImageToPng(String iconPath, File outFile) throws IOException {
+        String fullPath = combineFullPath(iconPath);
+
+        createPath(outFile.getParentFile());
+
+        File iconFile = new File(fullPath);
+        BufferedImage img;
+        if (iconPath.endsWith(".tga")) {
+            img = TgaFile.read(iconFile);
+        }else{
+            img = BlpFile.read(iconFile);
+        }
+        ImageIO.write(img, "png", outFile);
+    }
+
     public static void createPath(File path) {
-        if (path.exists()) {
+        //如果文件是相对路径，那么path可能为空
+        if (path==null || path.exists()) {
             return;
         } else {
             createPath(path.getParentFile());

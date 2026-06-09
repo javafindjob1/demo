@@ -162,7 +162,7 @@ public class UnitParse extends AbstractParse {
     return decimalFormat.format(d);
   }
 
-  public String convertDefType(String defType) {
+  public static String convertDefType(String defType) {
     try {
       return DefType.valueOf(defType).getDesc();
     } catch (IllegalArgumentException e) {
@@ -170,14 +170,20 @@ public class UnitParse extends AbstractParse {
     }
   }
 
-  public String convertAtkType(String atkType) {
+  public static String convertAtkType(String atkType) {
     try {
       return AtkType.valueOf(atkType).getDesc();
     } catch (IllegalArgumentException e) {
       return "未知";
     }
   }
-
+  public static String convertPrimaryType(String primaryType) {
+    try {
+      return PrimaryType.valueOf(primaryType).getDesc();
+    } catch (IllegalArgumentException e) {
+      return "未知";
+    }
+  }
   private static enum DefType {
     hero("暗"),
     divine("光"),
@@ -198,7 +204,7 @@ public class UnitParse extends AbstractParse {
 
   }
 
-  private static enum AtkType {
+  public static enum AtkType {
     hero("暗"),
     magic("光"),
     chaos("水"),
@@ -216,6 +222,22 @@ public class UnitParse extends AbstractParse {
       return this.desc;
     }
 
+  }
+
+  public static enum PrimaryType {
+    STR("力量"),
+    AGI("敏捷"),
+    INT("智力");
+
+    private String desc;
+
+    private PrimaryType(String desc) {
+      this.desc = desc;
+    }
+
+    public String getDesc() {
+      return this.desc;
+    }
   }
 
   public Map<String, List<UnitDetail>> getDropUnitOrder() {

@@ -121,10 +121,10 @@ public class ItemParse extends AbstractParse {
       }
 
       /** 物品类型 */
-      String type = splitType(itemDetail.getDescription(), e.getOthers().get("class"));
+      String type = splitType(itemDetail.getDescription(), e.getOthers().get("class"), e.getName());
       itemDetail.setType(type);
 
-      itemDetail.setPickRandom(itemDetail.getPickRandom());
+      itemDetail.setPickRandom(e.getPickRandom());
       String levelClass = combineLeveClass(e);
       itemDetail.setLevelClass(levelClass);
 
@@ -224,6 +224,9 @@ public class ItemParse extends AbstractParse {
   }
 
   private static String splitType(String description, String clazz) {
+    return splitType(description, clazz, "");
+  }
+  private static String splitType(String description, String clazz, String name) {
 
     String info = "";
     if (description.contains("种类：")) {
@@ -254,6 +257,8 @@ public class ItemParse extends AbstractParse {
             || description.contains("英雄等级立即提升1级") // ankh 穿梭之叶
         ) {
           info = "灵药";
+        }else if(name.contains("药水") || name.contains("神水")){
+          info = "药水";
         }
         break;
       case "Miscellaneous":
@@ -300,6 +305,7 @@ public class ItemParse extends AbstractParse {
       case "材料":
       case "特殊":
       case "灵药":
+      case "药水":
         // 以支线举例
         Map<String, Map<String, Map<String, Integer>>> markType = getMarkType(Client.class);
         Map<String, Map<String, Integer>> zhixianMap = markType.get(type);
@@ -336,6 +342,7 @@ public class ItemParse extends AbstractParse {
         typeMap.remove("灵药");
         typeMap.remove("材料");
         typeMap.remove("特殊");
+        typeMap.remove("药水");
         if (typeMap.size() > 0) {
           resultMap.putAll(typeMap);
         }
@@ -421,7 +428,7 @@ public class ItemParse extends AbstractParse {
       UnitGroup unitGroup) {
 
     // ITEMID,SET<UNITDEAIL>
-    Map<String, List<ItemDetail.UnitDrop>> shopSellItemMap = new HashMap<>();
+    Map<String, List<UnitDrop>> shopSellItemMap = new HashMap<>();
     idUnitMap.forEach((unitId, unitDetail) -> {
       String sellitems = unitDetail.getSellitems();
       if (sellitems == null) {
@@ -429,8 +436,8 @@ public class ItemParse extends AbstractParse {
       }
       String[] items = sellitems.split(",");
       for (String itemId : items) {
-        List<ItemDetail.UnitDrop> itemDropUnits = MapUtil.getNotNull(shopSellItemMap, itemId, ArrayList::new);
-        ItemDetail.UnitDrop unit = new ItemDetail.UnitDrop();
+        List<UnitDrop> itemDropUnits = MapUtil.getNotNull(shopSellItemMap, itemId, ArrayList::new);
+        UnitDrop unit = new UnitDrop();
         unit.setDropTrigger(unitDetail);
         DropInfo dropInfo = new DropInfo(itemId);
         dropInfo.setDesc("出售");
@@ -480,7 +487,7 @@ public class ItemParse extends AbstractParse {
       }
 
       // 常规掉落统计
-      List<ItemDetail.UnitDrop> droList = shopSellItemMap.get(itemId);
+      List<UnitDrop> droList = shopSellItemMap.get(itemId);
       if (droList == null) {
         return;
       }
@@ -515,7 +522,7 @@ public class ItemParse extends AbstractParse {
       return;
     }
     Map<String, List<ItemAccessories>> specialItemIdNotJuanzhouMap = new HashMap<>();
-    Map<String, List<ItemDetail.UnitDrop>> monsterDropItemMap = new HashMap<>();
+    Map<String, List<UnitDrop>> monsterDropItemMap = new HashMap<>();
 
     System.out.println("归纳Funtion为Item完成");
 
@@ -558,7 +565,7 @@ public class ItemParse extends AbstractParse {
       }
 
       // 常规掉落统计
-      List<ItemDetail.UnitDrop> droList = monsterDropItemMap.get(itemId);
+      List<UnitDrop> droList = monsterDropItemMap.get(itemId);
       if (droList == null) {
         return;
       }

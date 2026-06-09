@@ -466,7 +466,7 @@ public class ItemParse extends AbstractParse {
     Map<String, List<ItemDetail.UnitDrop>> shopSellItemMap = new HashMap<>();
     idUnitMap.forEach((unitId, unitDetail) -> {
       String sellitems = unitDetail.getSellitems();
-      if (sellitems == null) {
+      if (sellitems == null || unitDetail.getName().equals("纪念碑")) {
         return;
       }
       String[] items = sellitems.split(",");
@@ -576,7 +576,8 @@ public class ItemParse extends AbstractParse {
           List<ItemDetail.UnitDrop> list2 = MapUtil.getNotNull(monsterDropItemMap, item.getItemId(), ArrayList::new);
 
           ItemDetail.UnitDrop unit = new ItemDetail.UnitDrop();
-          unit.setDropTrigger(idUnitMap.get(unitId));
+          UnitDetail shop = idUnitMap.get(unitId);
+          unit.setDropTrigger(shop);
           unit.setDropInfo(item);
           item.setDesc("出售");
           list2.add(unit);
@@ -632,15 +633,18 @@ public class ItemParse extends AbstractParse {
 
             String desc = "|cffe6ceac所需装备组件：|n" + taozhuang.getColor();
             int levelInt = 0;
+            String level = "";
             for (String i : taozhuang.getItemList()) {
               desc += itemMap.get(i).getName() + "|n";
               if (itemMap.get(i).getLevelInt() > levelInt) {
                 levelInt = itemMap.get(i).getLevelInt();
+                level = itemMap.get(i).getLevel();
               }
             }
             desc = extendFormula(desc, this.nameMap) + taozhuang.getTaozhuangDesc();
             itemDetail.setDescription(desc);
-            itemDetail.setType("情报");
+            itemDetail.setType("套装");
+            itemDetail.setLevel(level);
             itemDetail.setLevelInt(levelInt);
             // 添加备注
             itemDetail.setMark(markMap.get(itemDetail.getId()));
@@ -754,11 +758,12 @@ public class ItemParse extends AbstractParse {
         break;
       case "主线任务所需物品":
       case "支线任务":
+      case "特殊":
       case "材料":
-      case "物品":
       case "食物":
+      case "纪念碑":
       case "消耗品":
-      case "情报":
+      case "套装":
         // 以支线举例
         Map<String, Map<String, Map<String, Integer>>> markType = getMarkType(Client.class);
         Map<String, Map<String, Integer>> zhixianMap = markType.get(type);
@@ -795,11 +800,12 @@ public class ItemParse extends AbstractParse {
         typeMap.remove("饰品");
         typeMap.remove("主线任务所需物品");
         typeMap.remove("支线任务");
+        typeMap.remove("特殊");
         typeMap.remove("材料");
-        typeMap.remove("物品");
         typeMap.remove("食物");
+        typeMap.remove("纪念碑");
         typeMap.remove("消耗品");
-        typeMap.remove("情报");
+        typeMap.remove("套装");
         if (typeMap.size() > 0) {
           resultMap.putAll(typeMap);
         }

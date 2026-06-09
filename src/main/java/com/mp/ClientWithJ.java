@@ -21,6 +21,7 @@ import com.mp.parse.HeroSheet;
 import com.mp.parse.ItemDetail;
 import com.mp.parse.ItemParse;
 import com.mp.parse.ItemSheet;
+import com.mp.parse.LingeSheet;
 import com.mp.parse.UnitDetail;
 import com.mp.parse.UnitParse;
 import com.mp.parse.UnitSheet;
@@ -87,11 +88,18 @@ public class ClientWithJ {
     HeroParse heroParse = new HeroParse();
     heroParse.wrapHero(abilityMap, idUnitMap, idItemMap, heroGroup);
 
+  
+
     // 生成excel
-    XSSFWorkbook workbook = new XSSFWorkbook();
+    XSSFWorkbook workbook = new XSSFWorkbook();  
+
+
     UnitSheet unitSheet = new UnitSheet(workbook, idItemMap);
     unitSheet.insert("单位", unitParse.getDropUnitOrder());
     unitSheet.insert("单位(场景)", unitParse.getDropUnit());
+    
+    LingeSheet lingeSheet = new LingeSheet(workbook, abilityMap);
+    lingeSheet.insert("灵格");
 
     HeroSheet heroSheet = new HeroSheet(workbook);
     heroSheet.insert("(力量", heroParse.getOrder(UnitDetail.Primary.STR));
@@ -107,11 +115,12 @@ public class ClientWithJ {
     itemSheet.insert("主线任务所需物品", itemParse.getDropUnit("主线任务所需物品"));
     itemSheet.insert("支线任务", itemParse.getDropUnit("支线任务"));
     itemSheet.insert("材料", itemParse.getDropUnit("材料"));
-    itemSheet.insert("物品", itemParse.getDropUnit("物品"));
+    itemSheet.insert("特殊", itemParse.getDropUnit("特殊"));
+    itemSheet.insert("纪念碑", itemParse.getDropUnit("纪念碑"));
     itemSheet.insert("食物", itemParse.getDropUnit("食物"));
     itemSheet.insert("消耗品", itemParse.getDropUnit("消耗品"));
-    Map<String, List<ItemDetail>> dropUnit = itemParse.getDropUnit("情报");
-    itemSheet.insert("情报", dropUnit);
+    Map<String, List<ItemDetail>> dropUnit = itemParse.getDropUnit("套装");
+    itemSheet.insert("套装", dropUnit);
     itemSheet.insert("未归类", itemParse.getDropUnit("未归类"));
 
     unitSheet.insertHead("更新记录", heroParse.getRes());

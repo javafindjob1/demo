@@ -7,7 +7,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.common.ini.Ability;
 import com.common.ini.Destructable;
-import com.common.ini.HeroGroup;
 import com.common.ini.IniRead;
 import com.common.ini.Item;
 import com.common.ini.Unit;
@@ -17,7 +16,6 @@ import com.mp.parse.DestructableDetail;
 import com.mp.parse.DestructableParse;
 import com.mp.parse.ExcelImageInsert;
 import com.mp.parse.HeroParse;
-import com.mp.parse.HeroSheet;
 import com.mp.parse.ItemDetail;
 import com.mp.parse.ItemParse;
 import com.mp.parse.ItemSheet;
@@ -30,11 +28,11 @@ import com.mp.sqlite.SqLiteJDBC;
 public class Client {
   public static void main(String[] args) throws Exception {
 
-    String excelName = "梦想远景装备介绍_v1.4.3.xlsx";
-    SqLiteJDBC.setVersion("v1.4.3", "v1.2.13");
+    String excelName = "梦想远景装备介绍_v1.8.2.xlsx";
+    SqLiteJDBC.setVersion("v1.8.2", "v1.7.2");
 
     String w3xliniPath = "D:\\war5-jass\\jass_plugin\\w3x2lni_zhCN_v2.5.2\\w3x2lni_zhCN_v2.5.2\\";
-    String assetPath = w3xliniPath + "0mp\\1A8B6AE6B4A86096D2DA43AD9C96B3D8\\";
+    String assetPath = w3xliniPath + "0mp\\FE4EDA8C6CC7212BF8C63B3BA6E3915B\\";
     ExcelImageInsert.set(assetPath, Client.class);
 
     List<Item> list = IniRead.read("template/Custom/item.ini", assetPath + "table\\item.ini", Item.class);
@@ -84,11 +82,11 @@ public class Client {
     itemSheet.insert("主线任务所需物品", itemParse.getDropUnit("主线任务所需物品"));
     itemSheet.insert("支线任务", itemParse.getDropUnit("支线任务"));
     itemSheet.insert("材料", itemParse.getDropUnit("材料"));
-    itemSheet.insert("物品", itemParse.getDropUnit("物品"));
     itemSheet.insert("食物", itemParse.getDropUnit("食物"));
-    itemSheet.insert("消耗品", itemParse.getDropUnit("消耗品"));
-    Map<String, List<ItemDetail>> dropUnit = itemParse.getDropUnit("情报");
-    itemSheet.insert("情报", dropUnit);
+    itemSheet.insert("纪念碑", itemParse.getDropUnit("纪念碑"));
+    itemSheet.insert("特殊", itemParse.getDropUnit("特殊"));
+    Map<String, List<ItemDetail>> dropUnit = itemParse.getDropUnit("套装");
+    itemSheet.insert("套装", dropUnit);
     itemSheet.insert("未归类", itemParse.getDropUnit("未归类"));
 
     unitSheet.insertHead("更新记录", heroParse.getRes());

@@ -18,7 +18,7 @@ public class MdxRead {
     // List<String> ff = getTextures("test/mdxfiles/mdx-e02Z-[hr]lrv_ms.mdx");
 
     String assetPath = "D:\\war5-jass\\jass_plugin\\w3x2lni_zhCN_v2.5.2\\w3x2lni_zhCN_v2.5.2\\";
-    assetPath += "0mp\\4FFD4CA60115240BEFBD7D6278E38E2F\\";
+    assetPath += "0x4\\E2AF578809778F1821BF50DB4ECC3BAD\\";
     ExcelImageInsert.set(assetPath, Client.class);
 
     // parseMdx("ss",
@@ -30,14 +30,14 @@ public class MdxRead {
     Map<String, UnitDetail> unitMap = new UnitParse().parse(list);
     List<UnitDetail> u = unitMap.values().stream().filter(e -> {
       // return e.getType().contains("giant");
-      return e.getId().contains("E011");
+      return e.getId().contains("O026");
       // return !e.getAbilList().contains("AInv");
       // return e.getAbilList().contains("AInv");
     }).collect(Collectors.toList());
 
   
-    String pathPre = "html\\javafindjob1.github.io\\mp\\mp-mdx\\";
-    // String pathPre = "C:\\Users\\76769\\Desktop\\demo\\test\\mdxfiles\\";
+    // String pathPre = "html\\javafindjob1.github.io\\mp\\mp-mdx\\";
+    String pathPre = "C:\\Users\\76769\\Desktop\\demo\\O026\\";
     generateCopyMdxTask(u, assetPath + "resource\\", pathPre);
   }
 

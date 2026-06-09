@@ -10,6 +10,7 @@ import java.awt.image.DataBufferByte;
 import java.awt.image.DataBufferInt;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
@@ -18,8 +19,13 @@ import java.io.RandomAccessFile;
  *
  * @author Riven, modified by Oger-Lord
  */
-public class TgaFile
-{
+public class TgaFile {
+
+	public static BufferedImage read(File file) throws IOException {
+		try (InputStream is = new FileInputStream(file);) {
+			return read(is);
+		}
+	}
 
 	/**
 	 * Read a TGA image from an input stream.
@@ -29,8 +35,7 @@ public class TgaFile
 	 * @return
 	 * @throws IOException
 	 */
-	public static BufferedImage read(InputStream is) throws IOException
-	{
+	public static BufferedImage read(InputStream is) throws IOException {
 
 		// Read Header
 		byte[] header = new byte[18];
@@ -41,20 +46,17 @@ public class TgaFile
 		int nRead;
 		byte[] data = new byte[16384];
 
-		while ((nRead = is.read(data, 0, data.length)) != -1)
-		{
+		while ((nRead = is.read(data, 0, data.length)) != -1) {
 			buffer.write(data, 0, nRead);
 		}
 		buffer.flush();
 		data = buffer.toByteArray();
 
 		// Verify Header
-		if ((header[0] | header[1]) != 0)
-		{
+		if ((header[0] | header[1]) != 0) {
 			throw new IllegalStateException("Error");
 		}
-		if (header[2] != 2)
-		{
+		if (header[2] != 2) {
 			throw new IllegalStateException("Error");
 		}
 		int w = 0, h = 0;
@@ -65,68 +67,50 @@ public class TgaFile
 
 		boolean alpha;
 
-		if ((header[16] == 24))
-		{
+		if ((header[16] == 24)) {
 			alpha = false;
-		}
-		else if (header[16] == 32)
-		{
+		} else if (header[16] == 32) {
 			alpha = true;
-		}
-		else
-		{
+		} else {
 			throw new IllegalStateException("Error invalid pixel depth: " + header[16]);
 		}
 
-		if ((header[17] & 15) != (alpha ? 8 : 0))
-		{
+		if ((header[17] & 15) != (alpha ? 8 : 0)) {
 			throw new IllegalStateException("Error");
 		}
 
 		BufferedImage dst = new BufferedImage(w, h, alpha ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_INT_RGB);
 		int[] pixels = ((DataBufferInt) dst.getRaster().getDataBuffer()).getData();
-		if (pixels.length != w * h)
-		{
+		if (pixels.length != w * h) {
 			throw new IllegalStateException("Error");
 		}
-		if (data.length < pixels.length * (alpha ? 4 : 3))
-		{
+		if (data.length < pixels.length * (alpha ? 4 : 3)) {
 			throw new IllegalStateException("Error not enaugh pixel data");
 		}
 
-		if (alpha)
-		{
-			for (int i = 0, p = (pixels.length - 1) * 4; i < pixels.length; i++, p -= 4)
-			{
+		if (alpha) {
+			for (int i = 0, p = (pixels.length - 1) * 4; i < pixels.length; i++, p -= 4) {
 				pixels[i] |= ((data[p + 0]) & 0xFF) << 0;
 				pixels[i] |= ((data[p + 1]) & 0xFF) << 8;
 				pixels[i] |= ((data[p + 2]) & 0xFF) << 16;
 				pixels[i] |= ((data[p + 3]) & 0xFF) << 24;
 			}
-		}
-		else
-		{
-			for (int i = 0, p = (pixels.length - 1) * 3; i < pixels.length; i++, p -= 3)
-			{
+		} else {
+			for (int i = 0, p = (pixels.length - 1) * 3; i < pixels.length; i++, p -= 3) {
 				pixels[i] |= ((data[p + 0]) & 0xFF) << 0;
 				pixels[i] |= ((data[p + 1]) & 0xFF) << 8;
 				pixels[i] |= ((data[p + 2]) & 0xFF) << 16;
 			}
 		}
 
-		if ((header[17] >> 4) == 1)
-		{
+		if ((header[17] >> 4) == 1) {
 			// ok
-		}
-		else if ((header[17] >> 4) == 0)
-		{
+		} else if ((header[17] >> 4) == 0) {
 			// flip horizontally
 
-			for (int y = 0; y < h; y++)
-			{
+			for (int y = 0; y < h; y++) {
 				int w2 = w / 2;
-				for (int x = 0; x < w2; x++)
-				{
+				for (int x = 0; x < w2; x++) {
 					int a = (y * w) + x;
 					int b = (y * w) + (w - 1 - x);
 					int t = pixels[a];
@@ -134,9 +118,7 @@ public class TgaFile
 					pixels[b] = t;
 				}
 			}
-		}
-		else
-		{
+		} else {
 			throw new UnsupportedOperationException("Error");
 		}
 
@@ -144,14 +126,14 @@ public class TgaFile
 	}
 
 	/**
-	 * Write a BufferedImage to a TGA file BufferedImages should be TYPE_INT_ARGB or TYPE_INT_RGB
+	 * Write a BufferedImage to a TGA file BufferedImages should be TYPE_INT_ARGB or
+	 * TYPE_INT_RGB
 	 * 
 	 * @param src
 	 * @param file
 	 * @throws IOException
 	 */
-	public static void writeTGA(BufferedImage src, File file) throws IOException
-	{
+	public static void writeTGA(BufferedImage src, File file) throws IOException {
 
 		boolean alpha = src.getColorModel().hasAlpha();
 		src = ImageUtils.convertStandardImageType(src, alpha);
@@ -159,56 +141,44 @@ public class TgaFile
 		DataBuffer buffer = src.getRaster().getDataBuffer();
 		byte[] data;
 
-		if (buffer instanceof DataBufferByte)
-		{
+		if (buffer instanceof DataBufferByte) {
 
 			// Not used anymore because convert to standard image type => Buffer is int
 			byte[] pixels = ((DataBufferByte) src.getRaster().getDataBuffer()).getData();
-			if (pixels.length != src.getWidth() * src.getHeight() * (alpha ? 4 : 3))
-			{
+			if (pixels.length != src.getWidth() * src.getHeight() * (alpha ? 4 : 3)) {
 				throw new IllegalStateException();
 			}
 
 			data = pixels;
 
-		}
-		else if (buffer instanceof DataBufferInt)
-		{
+		} else if (buffer instanceof DataBufferInt) {
 
 			int[] pixels = ((DataBufferInt) src.getRaster().getDataBuffer()).getData();
-			if (pixels.length != src.getWidth() * src.getHeight())
-			{
+			if (pixels.length != src.getWidth() * src.getHeight()) {
 				throw new IllegalStateException();
 			}
 
 			data = new byte[pixels.length * (alpha ? 4 : 3)];
 
-			if (alpha)
-			{
+			if (alpha) {
 
-				for (int p = 0; p < pixels.length; p++)
-				{
+				for (int p = 0; p < pixels.length; p++) {
 					int i = p * 4;
 					data[i + 0] = (byte) ((pixels[p] >> 0) & 0xFF);
 					data[i + 1] = (byte) ((pixels[p] >> 8) & 0xFF);
 					data[i + 2] = (byte) ((pixels[p] >> 16) & 0xFF);
 					data[i + 3] = (byte) ((pixels[p] >> 24) & 0xFF);
 				}
-			}
-			else
-			{
+			} else {
 
-				for (int p = 0; p < pixels.length; p++)
-				{
+				for (int p = 0; p < pixels.length; p++) {
 					int i = p * 3;
 					data[i + 0] = (byte) ((pixels[p] >> 0) & 0xFF);
 					data[i + 1] = (byte) ((pixels[p] >> 8) & 0xFF);
 					data[i + 2] = (byte) ((pixels[p] >> 16) & 0xFF);
 				}
 			}
-		}
-		else
-		{
+		} else {
 			throw new UnsupportedOperationException();
 		}
 

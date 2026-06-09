@@ -2,7 +2,7 @@ package com.abd.function;
 
 import java.util.Map;
 
-import com.abc.FunctionDetail;
+import com.xi7.FunctionDetail;
 import com.abd.Function;
 
 public class FunctionUnitInfo {

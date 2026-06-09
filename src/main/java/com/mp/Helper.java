@@ -2,6 +2,7 @@ package com.mp;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -31,10 +32,10 @@ import com.mp.sqlite.SqLiteJDBC;
 
 public class Helper {
   public static void main(String[] args) throws Exception {
-    SqLiteJDBC.setVersion("v1.4.3", "v1.2.13");
+    SqLiteJDBC.setVersion("v1.5.1", "v1.4.3");
 
     String w3xliniPath = "D:\\war5-jass\\jass_plugin\\w3x2lni_zhCN_v2.5.2\\w3x2lni_zhCN_v2.5.2\\";
-    String assetPath = w3xliniPath + "0mp\\1A8B6AE6B4A86096D2DA43AD9C96B3D8\\";
+    String assetPath = w3xliniPath + "0mp\\E283F124FB2723BD153989F8150EA39F\\";
     ExcelImageInsert.set(assetPath, ClientWithJ.class);
 
     List<Unit> unitList = IniRead.read("template/Custom/unit.ini", assetPath + "table\\unit.ini", Unit.class);
@@ -53,6 +54,8 @@ public class Helper {
     System.out.println("读取j文件完成");
 
     handleJ(funList, idUnitMap, abilityMap);
+
+    parse专属灵格(abilityMap);
     System.out.println();
   }
 
@@ -132,6 +135,40 @@ public class Helper {
     return lingList;
   }
 
+  // 基础英雄：英雄选择小助手
+  public static Map<String, String> pMap = new LinkedHashMap<>();
+  static {
+    pMap.put("O000", "O00S");
+    pMap.put("O001", "O00I");
+    pMap.put("E011", null);
+    pMap.put("N02D", "O00T");
+    pMap.put("O003", null);
+    pMap.put("O004", "O00K");
+    pMap.put("E01H", null);
+    pMap.put("E004", "E01S");
+    pMap.put("E008", "O00Q");
+    pMap.put("H006", "O00E");
+    pMap.put("O002", null);
+    pMap.put("E015", "O00Z");
+    pMap.put("N06G", "O00G");
+    pMap.put("O00M", null);
+    pMap.put("H007", "O00L");
+    pMap.put("H00H", "O011");
+    pMap.put("E014", "O01A");
+    pMap.put("H005", "O010");
+    pMap.put("E016", "O00U");
+    pMap.put("H00S", null);
+    pMap.put("H00B", null);
+    pMap.put("H00U", null);
+    pMap.put("O00X", null);
+    pMap.put("O012", null);
+    pMap.put("O014", null);
+    pMap.put("O015", null);
+    pMap.put("E01Q", null);
+    pMap.put("E01R", null);
+    pMap.put("H00Y", null);
+  }
+
   public static List<String> hero(Map<String, UnitDetail> unitMap, Map<String, AbilityDetail> abilityMap,
       List<Function> funList) {
 
@@ -164,21 +201,8 @@ public class Helper {
     // <111|222, List<Map<udg_ROCK, ability>> <111|222, List<Map<O004, ability>>
     Map<String, String> udgHeroDazhaMap = FunctionHeroDaZhaoAndCore.parse(funMap);
 
-    // 基础英雄：英雄选择小助手
-    Map<String, String> pMap = new HashMap<>();
-    pMap.put("E008", "O00Q");
-    pMap.put("O000", "O00S");
-    pMap.put("H006", "O00E");
-    pMap.put("N06G", "O00G");
-    pMap.put("O001", "O00I");
-    pMap.put("O004", "O00K");
-    pMap.put("H007", "O00L");
-    pMap.put("N02D", "O00T");
-    pMap.put("H005", "O010");
-    pMap.put("E015", "O00Z");
-    pMap.put("E016", "O00U");
-    pMap.put("H00H", "O011");
-    pMap.put("E014", "O01A");
+    readGuanjing();
+    readJianjie();
 
     Map<String, String[]> udgHeroTeam = new HashMap<>();
 
@@ -191,7 +215,8 @@ public class Helper {
     heroList.add("[heros]");
 
     List<String> units = new ArrayList<>();
-    for (UnitDetail hero : unitHeroMap.values()) {
+    for (String uid : unitHeroMap.keySet()) {
+      UnitDetail hero = unitHeroMap.get(uid);
       String id = hero.getId();
       // 主要属性
       String udgheronameAll = udgHeroNameMap.get(id);
@@ -227,7 +252,7 @@ public class Helper {
 
     }
     // 添加简介和皮肤增强
-    for (String baseUserId : units) {
+    for (String baseUserId : pMap.keySet()) {
       String[] team = udgHeroTeam.get(baseUserId);
       // 主要属性
       {
@@ -259,6 +284,11 @@ public class Helper {
         ultiList.add("-- " + hero.getPropernames());
         String ulti = "\"" + t.getId() + "\"";
         ultiList.add(baseUserId + " = " + ulti);
+
+        // 简介
+        String intro = introMap.get(baseUserId);
+        introList.add("-- " + hero.getPropernames());
+        introList.add(baseUserId + " = " + intro);
       }
       if (team[1] != null) {
         String pId = team[1];
@@ -301,7 +331,7 @@ public class Helper {
     }
 
     // 追加英雄组信息heros
-    for (String id : units) {
+    for (String id : pMap.keySet()) {
       String[] team = udgHeroTeam.get(id);
       UnitDetail u = unitMap.get(id);
       heroList.add("-- " + u.getPropernames());
@@ -312,41 +342,13 @@ public class Helper {
       heroList.add(id + " = " + buf.toString());
     }
 
-    Map<String, String> moheMap = new HashMap<>();
-    try (BufferedReader br = new BufferedReader(
-        new InputStreamReader(Client.class.getResourceAsStream("custom/凝空光晶.txt"), StandardCharsets.UTF_8))) {
-      String line = null;
-      while ((line = br.readLine()) != null) {
-        if (line.trim().length() == 0) {
-          continue;
-        }
-        // |cffffffcc凝空光晶-狂战神|r
-        // |cffbeedc7
-        if (line.startsWith("|cffffffcc")) {
-          String heroName = line.substring(15, line.length() - 2);
-          line += "|n" + br.readLine();
-          moheMap.put(heroName, line);
-        }
-      }
-    } catch (IOException e1) {
-      System.out.println("凝空光晶文本读取失败");
-      e1.printStackTrace();
-    }
-
     // 追加凝空光晶
     heroList.add("[magiccores]");
-    for (String id : units) {
+    for (String id : pMap.keySet()) {
       UnitDetail baseHero = unitMap.get(id);
-      String ubertip = moheMap.get(baseHero.getName());
-      if (ubertip == null) {
-        ubertip = moheMap.get(UnitParse.trimName(baseHero.getPropernames()));
-      }
-      if (ubertip != null) {
-        heroList.add("-- " + baseHero.getPropernames());
-        heroList.add(id + " = \"" + ubertip + "\"");
-      } else {
-        System.out.println("凝空光晶未找到，" + UnitParse.trimName(baseHero.getPropernames()) + baseHero.getName());
-      }
+      String ubertip = guanjingMap.get(id);
+      heroList.add("-- " + baseHero.getPropernames());
+      heroList.add(id + " = \"" + ubertip + "\"");
     }
 
     // 追加stoies
@@ -365,6 +367,114 @@ public class Helper {
     ultiList.addAll(introList);
     ultiList.addAll(heroList);
     return ultiList;
+
+  }
+
+  static Map<String, String> guanjingMap = new HashMap<>();
+  static Map<String, String> introMap = new HashMap<>();
+
+  public static void readGuanjing() {
+    Set<String> keys = pMap.keySet();
+    int i = 1;
+    Map<Integer, String> map = new HashMap<>();
+    for (String key : keys) {
+      map.put(i++, key);
+    }
+
+    Pattern p = Pattern.compile("(\\d+)\\s*=\\s*\"(.*)\",?");
+    try (BufferedReader br = new BufferedReader(
+        new InputStreamReader(new FileInputStream("D:\\Code\\demo\\demo\\src\\main\\java\\com\\mp\\custom\\凝空光晶.txt"),
+            "utf8"))) {
+      String line = null;
+      while ((line = br.readLine()) != null) {
+        line = line.trim();
+        Matcher matcher = p.matcher(line);
+        if (matcher.find()) {
+          int index = Integer.parseInt(matcher.group(1));
+          String value = matcher.group(2);
+          guanjingMap.put(map.get(index), value);
+        }
+      }
+    } catch (Exception e) {
+      System.out.println("读取凝空光晶异常处理");
+    }
+  }
+
+  public static void readJianjie() {
+    Set<String> keys = pMap.keySet();
+    int i = 1;
+    Map<Integer, String> map = new HashMap<>();
+    for (String key : keys) {
+      map.put(i++, key);
+    }
+
+    Map<String, String> headMap = new HashMap<>();
+    Map<String, String> valueMap = new HashMap<>();
+
+    boolean headFlag = true;
+    Pattern p = Pattern.compile("(\\d+)\\s*=\\s*\"(.*)\",?");
+    try (BufferedReader br = new BufferedReader(
+        new InputStreamReader(new FileInputStream("D:\\Code\\demo\\demo\\src\\main\\java\\com\\mp\\custom\\简介.txt"),
+            "utf8"))) {
+      String line = null;
+      while ((line = br.readLine()) != null) {
+        line = line.trim();
+        Matcher matcher = p.matcher(line);
+        if (line.startsWith("Ubertip")) {
+          headFlag = false;
+        }
+        if (matcher.find()) {
+          int index = Integer.parseInt(matcher.group(1));
+          String value = matcher.group(2);
+          if (headFlag) {
+            headMap.put(map.get(index), value);
+          } else {
+            valueMap.put(map.get(index), value);
+          }
+        }
+      }
+    } catch (Exception e) {
+      System.out.println("读取简介异常处理");
+    }
+
+    // 拼接头和内容
+    for (String key : keys) {
+      String head = headMap.get(key);
+      String value = valueMap.get(key);
+
+      introMap.put(key, "\"" + head + value + "\"");
+    }
+  }
+
+  public static void parse专属灵格(Map<String, AbilityDetail> abilityMap) throws Exception {
+    List<String> list = new ArrayList<>();
+    Pattern p = Pattern.compile("(\\d+)\\s*=\\s*(\\w{4})?\\s*");
+    try (BufferedReader br = new BufferedReader(
+        new InputStreamReader(Client.class.getResourceAsStream("custom/专属灵格.txt")))) {
+      String line = null;
+      while ((line = br.readLine()) != null) {
+        line = line.trim();
+        Matcher matcher = p.matcher(line);
+        if (matcher.find()) {
+          String no = matcher.group(1);
+          String id = matcher.group(2);
+          if (id != null) {
+            AbilityDetail abilityDetail = abilityMap.get(id);
+            String desc = abilityDetail.getUbertip();
+            list.add(no + " = \"" + desc + "\"");
+          }else{
+            list.add(no + " = \"\"");
+          }
+        }
+      }
+    }
+    try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
+        new FileOutputStream("D:\\Code\\demo\\demo\\src\\main\\java\\com\\mp\\custom\\专属灵格.ini"), "utf8"))) {
+      for (String row : list) {
+        bw.write(row);
+        bw.newLine();
+      }
+    }
 
   }
 }

@@ -12,6 +12,7 @@ import com.common.parse.AbstractParse;
 import com.common.parse.Function;
 import com.common.util.MapUtil;
 import com.common.util.ObjectUtil;
+import com.mp.Helper;
 import com.mp.function.HeroData;
 import com.mp.function.HeroData.ViewData;
 import com.mp.function.hero.Hero;
@@ -33,6 +34,9 @@ public class HeroParse extends AbstractParse {
         items.add(item);
       }
     }
+     
+    unitMap.remove("O016");
+    unitMap.remove("E01M");
 
     Map<String, UnitDetail> unitHeroMap = new HashMap<>();
     for (UnitDetail unit : unitMap.values()) {
@@ -66,10 +70,10 @@ public class HeroParse extends AbstractParse {
       }
 
       String intro = heroGroup.getIntro(id);
-      AbilityDetail introAbi = abilityMap.get("A0BC");
+      AbilityDetail introAbi = abilityMap.get("A06P");
       AbilityDetail introAbiCopy = new AbilityDetail();
       introAbiCopy.setId(introAbi.getId());
-      introAbiCopy.setName(introAbi.getName());
+      introAbiCopy.setName("|cffd6d5b7旅行者简介");
       introAbiCopy.setArt(introAbi.getArt());
       introAbiCopy.setUbertip(intro);
       hero.setIntro(introAbiCopy);
@@ -103,20 +107,7 @@ public class HeroParse extends AbstractParse {
   public Map<String, HeroData> wrapHeroData(Map<String, AbilityDetail> abilityMap, Map<String, UnitDetail> unitMap,
       Map<String, ItemDetail> idItemMap, List<Function> funList) {
     // Map<String, Hero[]> res
-
-    Map<String, String> pMap = new HashMap<>();
-    pMap.put("E008", "O00Q");
-    pMap.put("O000", "O00S");
-    pMap.put("H006", "O00E");
-    pMap.put("N06G", "O00G");
-    pMap.put("O001", "O00I");
-    pMap.put("O004", "O00K");
-    pMap.put("H007", "O00L");
-    pMap.put("N02D", "O00T");
-    pMap.put("H005", "O010");
-    pMap.put("E015", "O00Z");
-    pMap.put("E016", "O00U");
-    pMap.put("H00H", "O011");
+    Map<String, String> pMap = Helper.pMap;
 
     Map<String, HeroData> heroMap = new HashMap<>();
     for (Entry<String, Hero[]> herosEntry : this.res.entrySet()) {
@@ -165,7 +156,7 @@ public class HeroParse extends AbstractParse {
           // 原皮移除一件专属装备，
           hero0.getItems().remove(hero0.getItems().size() - 1);
           // "E008" 多移除一件 蓓雷德
-          if (hero0.getUnitId().equals("E008")) {
+          if (hero0.getUnitId().equals("E008") || hero0.getUnitId().equals("E014")) {
             hero0.getItems().remove(hero0.getItems().size() - 1);
           }
 

@@ -10,6 +10,7 @@ public class AbilityDetail {
   private String name;
   /** 满技能详情 */
   private String ubertip;
+  private String unubertip;
   /** 热键 - 普通 QWERT */
   private String hotkey;
   /** 技能图标 */

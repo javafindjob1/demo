@@ -43,7 +43,7 @@ import com.util.ImageMerger;
 public class ClientForWeb {
   public static void main(String[] args) throws Exception {
     String w3xliniPath = "D:\\war5-jass\\jass_plugin\\w3x2lni_zhCN_v2.5.2\\w3x2lni_zhCN_v2.5.2\\";
-    String assetPath = w3xliniPath + "0mp\\FB6D1E69E144A72B06A159542DBF51A3\\";
+    String assetPath = w3xliniPath + "0mp\\E283F124FB2723BD153989F8150EA39F\\";
     ExcelImageInsert.set(assetPath, ClientForWeb.class);
 
     List<Item> list = IniRead.read("template/Custom/item.ini", assetPath + "table\\item.ini", Item.class);
@@ -120,7 +120,7 @@ public class ClientForWeb {
         { "O000", "E011", "E004", "E008", "E016", "H00S" },
         { "O001", "O003", "E015", "H006", "H007", "H00H" },
         { "O004", "E01H", "O00M", "N06G", "E014", "H005" },
-        { "N02D", "O00X", "", "O002", "H00B", "H00U" },
+        { "N02D", "O00X", "",     "O002", "H00B", "H00U" },
         { "O012", "O014", "O015", "E01Q", "E01R", "H00Y" },
     };
     String basePath = "html\\javafindjob1.github.io\\mp\\mp-imgs\\";

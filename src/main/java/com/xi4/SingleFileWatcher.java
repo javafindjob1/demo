@@ -2,6 +2,9 @@ package com.xi4;
 
 import java.util.*;
 import java.nio.file.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import static java.nio.file.StandardWatchEventKinds.*;
 
 import java.io.FileInputStream;
@@ -124,15 +127,17 @@ public class SingleFileWatcher {
                 timerTask = new TimerTask() {
                     public void run() {
                         try {
-                            System.out.println("开始复制..");
+                            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+                            System.out.println(LocalDateTime.now().format(dtf) + " 开始复制..");
                             copyWithTransferTo(sourceFile, targetFile);
+                            System.out.println(LocalDateTime.now().format(dtf) + " 复制结束");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
                 };
 
-                t.schedule(timerTask, 1000);
+                t.schedule(timerTask, 2000);
             }
 
             @Override

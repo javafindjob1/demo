@@ -122,15 +122,21 @@ public abstract class AbstractSheet {
     if (description == null || description.trim().length() == 0) {
       return list;
     }
-  
     {
-      Pattern singleR = Pattern.compile("\\|r(?!\\|c)");
-      Matcher matcher = singleR.matcher(description);
+      // 大小写归一化 |cFFx000aA |cffx000aa
+      Pattern compile = Pattern.compile("\\|cff\\w{3,6}", Pattern.CASE_INSENSITIVE);
+      Matcher matcher = compile.matcher(description);
       while (matcher.find()) {
         String group = matcher.group();
-        description = description.replace(group, "|cffffffff");
+        description = description.replace(group, group.toLowerCase());
       }
-      // 删除所有|r
+    }
+    {
+      // 替换|r死亡之蝎中的|r
+      Pattern singleR = Pattern.compile("\\|r(?!\\|c)", Pattern.CASE_INSENSITIVE);
+      description = singleR.matcher(description).replaceAll("|cffffffff");
+
+      // 删除|r|cff前面的|r
       description = description.replaceAll("\\|[rR]", "");
     }
 

@@ -150,8 +150,11 @@ public class UnitSheet extends AbstractSheet {
                     String heroId = heroArr[i][j];
                     Hero[] heros = heroMap.get(heroId);
                     if (heros == null) {
+
                         // 空位
                         continue;
+                    }else if(heros[0] == null){
+                        System.out.println("heros[0] == null 原皮为空！！" + heroId);
                     }
                     String sheetN = heros[0].getSheetName();
                     int rowNum = heros[0].getRowNum();

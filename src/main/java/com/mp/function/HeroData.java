@@ -123,14 +123,18 @@ public class HeroData {
     public ViewData() {
     }
     public ViewData(AbilityDetail abilityDetail) {
-      if(abilityDetail==null)return;
+      if(abilityDetail==null){
+        return;
+      }
       this.setName(abilityDetail.getName());
       this.setIcon(abilityDetail.getArt());
       this.setDesc(abilityDetail.getUbertip());
     }
     
     public ViewData(ItemDetail item) {
-      if(item==null)return;
+      if(item==null){
+        return;
+      }
       this.setName(item.getName());
       this.setIcon(item.getIcon());
       this.setDesc(item.getDescription());
@@ -142,7 +146,7 @@ public class HeroData {
         this.icon = newName;
         File outFile = new File("html\\javafindjob1.github.io\\mp\\mp-imgs\\" + newName);
         if (!outFile.exists()) {
-          ExcelImageInsert.convertImageToPng(icon, outFile);
+          ExcelImageInsert.convertImageToWebp(icon, outFile);
         }
       } catch (Exception e) {
         e.printStackTrace();
@@ -151,7 +155,7 @@ public class HeroData {
 
     public void setDesc(String desc) {
       this.desc = this.name + "|n" + desc;
-      this.name = null;
+      // this.name = null;
     }
 
     public static void initIcon() {
@@ -178,7 +182,7 @@ public class HeroData {
           String newName = icon.replace(".blp", ".webp");
           File outFile = new File("html\\javafindjob1.github.io\\mp\\mp-imgs\\" + newName);
           if (!outFile.exists()) {
-            ExcelImageInsert.convertImageToPng(icon, outFile);
+            ExcelImageInsert.convertImageToWebp(icon, outFile);
           }
         } catch (Exception e) {
         }

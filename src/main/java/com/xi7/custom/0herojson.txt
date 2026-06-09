@@ -1,0 +1,46 @@
+{
+	"E02H": {
+		"armor": "medium,4,350",
+		"attack": "pierce,93 - 99,600,1.44",
+		"baseUnitId": "E00C",
+		"d": {
+			"desc": "|cffccffcc英雄天赋|r|n|cffffcc00天赋1：|r购买物品返还15%金币|n|cffffcc00天赋2：|r暴击率+7%|n|cffffcc00天赋3：|r命运邀请有30%几率重置冷却时间"
+		},
+		"e": {
+			"desc": "命运指定|n|cffccffff类型：|r|cffffcc99增益（被动）|r|n|n|cffccffff纸牌秘书每当发动技能时，随机抽取一种花色来获取能力|n|r|cffff0000红桃：回复42%生命值|r|cff00ff00|n|r|cffff99cc方块：3秒内增加85%闪避率|n|r|cffccffcc草花：减少该技能36%冷却时间|r|cff00ff00|n|r|cffcc99ff黑桃：增加64%伤害|r|n|r|cffcc8dc4|n皮肤强化：|n点金率+5%|r"
+		},
+		"hp": "827,541",
+		"intro": "|cffffcc00纸牌秘书【娜波莉】|r|n|n单体打击能力|cffff0303★★★★|r|n群体打击能力|cffff0303★★★★|r|n战场生存能力|cffff0303★★★|r|n战技战术能力|cffff0303★★★★|r|n|n|cffffcc00英雄技能|r|n命运邀请，惊喜盒子，命运指定，切断术，|cffff0000千牌之雨|r|n|n|cffffcc00英雄介绍|r|n黑之商会北方分会的财务秘书，同时也兼理收账工作，没有人会看到她锋利的扑克牌而拒绝还款。据说她已收到总部的任命书，即将担任社长的秘书。|n",
+		"items": [{
+			"desc": "白银手套|n|cff99ccff敏捷+85|n护甲+15|n法术抗性+10%|n法术暴击+5%|n|r|cff999999纸牌秘书专属：|n敏捷+85|r|cff99ccff|n|r|cff99cc00等级：D|n|r|cffff99cc类型：饰品|n|r|cff99cc00|n|r西方伯爵执行皇家礼仪时所戴的白色神圣手套。"
+		}, {
+			"desc": "虚空手套|n|cff99ccff敏捷+450|n护甲+100|n生命上限+4000|n暴击伤害+60%|n成为别人指向性法术目标时，立即恢复敏捷x2的生命值|n|r|cff999999纸牌秘书专属：|n切断术几率+8%|r|cff99ccff|n|r|cff99cc00等级：S|n|r|cffff99cc类型：饰品|n|n|r虚空之地的匠神们的工作手套，每根指套周围都装有幻镜碎片，能将指定波段的光线集中在工作区域。|n"
+		}, {
+			"desc": "独角兽|n|cff99ccff移动速度+200|n敏捷+500|n法术抗性+10%|n暴击率+5%|n暴击伤害+120%|n|r|cff999999纸牌秘书专属：|n切断术附带溅射伤害|r|cff99ccff|n|r|cff99cc00等级：S+|n|r|cffff9900类型：鞋子|r|cff99cc00|n|n|r独角兽军团的究极机械战靴，靴尖装有千年独角兽的尖角，杀伤力无需多言。"
+		}],
+		"name": "纸牌秘书",
+		"p1": {
+			"desc": "|cff80ff80纸牌秘书皮肤1|r|n|cffffcc00点击后使用该皮肤|r",
+			"unitId": "E02H"
+		},
+		"p2": {
+			"desc": "|cff00ccff纸牌秘书皮肤2|r|n|cffffcc00点击后使用该皮肤|n|r|cffccffff降低初始攻击间隔|r|cffffcc00|n|r|cffccffff暴击率+8%|n法术暴击+10%|n法术暴击伤害+20%|n法术抗性+10%|n冷却时间-10%|n专属合成书+1|n千牌之雨增加范围|r",
+			"unitId": "E02A"
+		},
+		"prop": "1,19,31,25",
+		"propernames": "娜波莉",
+		"q": {
+			"desc": "命运邀请|n|cffccffff类型：|r|cffffcc99回复/魔法伤害|r|cffccffff|n属性：|r|cffffcc99敏捷|r|n|n|cffccffff纸牌秘书飞出一张纸牌，回复一名友军|r|cffffcc0025%+敏捷x9|r|cffccffff的生命值，或者对一名敌人造成|r|cffffcc004200+敏捷x50|r|cffccffff的伤害。|r|n|r|cffcc8dc4|n皮肤强化：|n伤害+30%|r"
+		},
+		"r": {
+			"desc": "切断术|n|cffccffff类型：|r|cffffcc99物理伤害（被动）|n|r|cffccffff属性：|r|cffffcc99攻击力|r|n|n|cffccffff纸牌秘书永久增加|r|cffffcc007500点|r|cffccffff攻击力，并且普通攻击有|r|cffffcc0020%|r|cffccffff几率造成无视防御的伤害。|r|n|r|cffcc8dc4|n皮肤强化：|n基础几率提升至22%|n提升攻击力加成|r"
+		},
+		"t": {
+			"desc": "千牌之雨|n|cffccffff类型：|r|cffffcc99物理伤害|r|cffccffff|n属性：|r|cffffcc99攻击力|r|n|n|cffccffff纸牌秘书飞出无数纸牌，对大范围内的敌人造成|r|cffffcc00敏捷x60+攻击力x16|r|cffccffff，并且|r|cffffcc00无视护甲|r|cffccffff的伤害。|r|n|r|cffcc8dc4|n皮肤强化：|n伤害+25%|n范围+25%|r"
+		},
+		"unitId": "E02H",
+		"w": {
+			"desc": "惊喜盒子|n|cffccffff类型：|r|cffffcc99魔法伤害、控制|n|r|cffccffff属性：|r|cffffcc99敏捷|r|n|n|cffccffff纸牌秘书打开一个小丑盒子，释放跳蛋攻击附近敌人，造成|r|cffffcc002400+敏捷x26|r|cffccffff伤害，并随机追加|r|cffffcc00负面状态|r|cffccffff。|r|n|r|cffcc8dc4|n皮肤强化：|n伤害+20%|n随机新增一种爆炸效果，造成范围巨大伤害。|r"
+		}
+	}
+}

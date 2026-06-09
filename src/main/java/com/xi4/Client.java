@@ -88,6 +88,7 @@ public class Client {
     itemSheet.insert("材料", itemParse.getDropUnit("材料"));
     itemSheet.insert("特殊", itemParse.getDropUnit("特殊"));
     itemSheet.insert("灵药", itemParse.getDropUnit("灵药"));
+    itemSheet.insert("药水", itemParse.getDropUnit("药水"));
     // itemSheet.insert("未分类", itemParse.getDropUnit("未分类"));
     unitSheet.insertHead("更新记录", heroParse.getRes());
     itemSheet.writeTo(excelName);

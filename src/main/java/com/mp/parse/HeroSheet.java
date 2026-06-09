@@ -158,6 +158,8 @@ public class HeroSheet extends AbstractSheet {
             }
             insertDescription(row, 6, cellStyle, workbook, "");
 
+            ExcelImageInsert.drawingBlp(sheet, ability.getArt(), 0, dataI, 2, 1, 1);
+            
             row = sheet.createRow(++dataI);
             row.setHeight((short) 1000);
             insertDescription(row, 0, cellStyle, workbook, "");

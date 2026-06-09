@@ -51,6 +51,7 @@ public class AbilityParse extends AbstractParse {
         ubertip = ubertip.substring(ubertip.lastIndexOf("@,@") + 3);
       }
       ad.setUbertip(ubertip);
+      ad.setUnubertip(ability.getUnubertip());
 
       // 备注
       String markStr = markMap.get(ability.getId());
